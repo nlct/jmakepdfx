@@ -1,0 +1,7 @@
+jmakepdfx-dict.bib
+jmakepdfx.pdf
+*.glstex
+*.aux
+*.glg
+*.log
+*.toc
