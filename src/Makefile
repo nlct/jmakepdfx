@@ -20,16 +20,23 @@ lib/jmakepdfx.jar	: java/Manifest.txt \
 	classes/com/dickimawbooks/jmakepdfx/Jmakepdfx.class \
 	classes/com/dickimawbooks/jmakepdfx/dictionaries/ \
 	dictionaries/jmakepdfx-en.xml \
-	lib/jmakepdfx-helpset.tjh
+	lib/jmakepdfx-helpset.tjh \
+	classes/com/dickimawbooks/jmakepdfx/icons/ \
+	java/icons/*.png
 	cp dictionaries/jmakepdfx-*.xml classes/com/dickimawbooks/jmakepdfx/dictionaries/
+	cp java/icons/*.png classes/com/dickimawbooks/jmakepdfx/icons/
 	cd classes; \
 	jar cmf ../java/Manifest.txt ../lib/jmakepdfx.jar \
 	com/dickimawbooks/jmakepdfx/*.class \
 	com/dickimawbooks/jmakepdfx/dictionaries \
-	com/dickimawbooks/jmakepdfx/dictionaries/*.xml
+	com/dickimawbooks/jmakepdfx/dictionaries/*.xml \
+	com/dickimawbooks/jmakepdfx/icons/*.png
 
 classes/com/dickimawbooks/jmakepdfx/dictionaries/	:
 	mkdir -p classes/com/dickimawbooks/jmakepdfx/dictionaries/
+
+classes/com/dickimawbooks/jmakepdfx/icons/	:
+	mkdir -p classes/com/dickimawbooks/jmakepdfx/icons/
 
 classes/com/dickimawbooks/jmakepdfx/Jmakepdfx.class	: classes/com/dickimawbooks/jmakepdfx \
 	java/*.java

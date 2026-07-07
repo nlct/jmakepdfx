@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 import java.awt.Image;
+import java.awt.FlowLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,15 +37,26 @@ import java.awt.event.KeyEvent;
 
 import javax.imageio.ImageIO;
 
+import javax.swing.Box;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.xml.sax.SAXException;
 
@@ -285,8 +297,41 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       JMenu fileM = helpLib.createJMenu("menu.file");
       mBar.add(fileM);
 
+      fileChooser = new JFileChooser();
+      FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        getMessage("filter.pdf"), "pdf");
+      fileChooser.setFileFilter(filter);
+
+      TJHAbstractAction inputAction = new TJHAbstractAction(helpLib,
+        "menu.file", "input", helpLib.getKeyStroke("menu.input"),
+        helpLib.getDefaultButtonActionOmitKeys())
+         {
+            @Override
+            public void doAction()
+            {
+               selectInputFile();
+            }
+         };
+
+      fileM.add(inputAction);
+      toolbar.add(inputAction);
+
+      TJHAbstractAction outputAction = new TJHAbstractAction(helpLib,
+        "menu.file", "output", helpLib.getKeyStroke("menu.output"),
+        helpLib.getDefaultButtonActionOmitKeys())
+         {
+            @Override
+            public void doAction()
+            {
+               selectOutputFile();
+            }
+         };
+
+      fileM.add(outputAction);
+      toolbar.add(outputAction);
+
       fileM.add(helpLib.createJMenuItem("menu.file", "quit", this,
-        KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK)));
+        helpLib.getKeyStroke("menu.file.quit")));
 
       JMenu helpM = helpLib.createJMenu("menu.help");
       mBar.add(helpM);
@@ -324,9 +369,98 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
          helpLib.error(e);
       }
 
+      JComponent mainComp = Box.createVerticalBox();
+      mainFrame.getContentPane().add(new JScrollPane(mainComp), "Center");
+
+      JComponent row;
+
+      inputField = new JTextField(FILE_FIELD_SIZE);
+      inputField.setEditable(false);
+
+      if (inFile != null)
+      {
+         inputField.setText(inFile.toString());
+      }
+
+      JButton chooseInButton = helpLib.createJButton("inputfile", "choosein", this,
+        helpLib.getIconPrefix("inputfile.choosein", "open"), true, true);
+
+      JLabelGroup labelGrp = new JLabelGroup();
+      JLabel inputLabel = helpLib.createJLabel(labelGrp, "inputfile.label", chooseInButton);
+
+      row = createRow(FILE_ROW_HGAP, FILE_ROW_VGAP);
+      mainComp.add(row);
+
+      row.add(inputLabel);
+      row.add(inputField);
+      row.add(chooseInButton);
+
+      outputField = new JTextField(FILE_FIELD_SIZE);
+      outputField.setEditable(false);
+
+      if (outFile != null)
+      {
+         outputField.setText(outFile.toString());
+      }
+
+      JButton chooseOutButton = helpLib.createJButton("outputfile", "chooseout", this,
+        helpLib.getIconPrefix("inputfile.chooseout", "open"), true, true);
+
+      JLabel outputLabel = helpLib.createJLabel(labelGrp, "outputfile.label", outputField);
+
+      row = createRow(FILE_ROW_HGAP, FILE_ROW_VGAP);
+      mainComp.add(row);
+
+      row.add(outputLabel);
+      row.add(outputField);
+      row.add(chooseOutButton);
+
+      JComponent infoComp = Box.createVerticalBox();
+      infoComp.setAlignmentX(0f);
+      infoComp.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createEtchedBorder(), 
+        helpLib.getMessage("pdfinfo.title")
+       ));
+
+      mainComp.add(infoComp);
+
+      row = createRow();
+      infoComp.add(row);
+
+      titleField = new JTextField();
+      JLabel titleLabel = helpLib.createJLabel(labelGrp, "pdfinfo.pdftitle", titleField);
+      row.add(titleLabel);
+      row.add(titleField);
+
+      row = createRow();
+      infoComp.add(row);
+
+      authorField = new JTextField();
+      JLabel authorLabel = helpLib.createJLabel(labelGrp, "pdfinfo.pdfauthor", authorField);
+      row.add(authorLabel);
+      row.add(authorField);
+
       mainFrame.pack();
       mainFrame.setLocationRelativeTo(null);
       mainFrame.setVisible(true);
+   }
+
+   protected JComponent createRow()
+   {
+      Box row = Box.createHorizontalBox();
+
+      row.setAlignmentX(0f);
+
+      return row;
+   }
+
+   protected JComponent createRow(int hgap, int vgap)
+   {
+      JComponent row = new JPanel(new FlowLayout(FlowLayout.LEADING, hgap, vgap));
+
+      row.setAlignmentX(0f);
+
+      return row;
    }
 
    public ImageIcon getAppIcon(String name)
@@ -413,7 +547,15 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    {
       String action = evt.getActionCommand();
 
-      if ("quit".equals(action))
+      if ("choosein".equals(action))
+      {
+         selectInputFile();
+      }
+      else if ("chooseout".equals(action))
+      {
+         selectOutputFile();
+      }
+      else if ("quit".equals(action))
       {
          quit();
       }
@@ -431,6 +573,46 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    {
 // TODO check if process running
       System.exit(0);
+   }
+
+   public void selectInputFile()
+   {
+      if (inFile != null)
+      {
+         fileChooser.setSelectedFile(inFile);
+      }
+
+      if (fileChooser.showOpenDialog(mainFrame)
+        == JFileChooser.APPROVE_OPTION)
+      {
+         inFile = fileChooser.getSelectedFile();
+         inputField.setText(inFile.toString());
+      }
+   }
+
+   public void selectOutputFile()
+   {
+      if (outFile == null)
+      {
+         String filename = inFile.toString();
+
+         if (filename.endsWith(".pdf"))
+         {
+            filename = filename.substring(0, filename.length()-4) + "-pdfx.pdf";
+            fileChooser.setSelectedFile(new File(filename));
+         }
+      }
+      else
+      {
+         fileChooser.setSelectedFile(outFile);
+      }
+
+      if (fileChooser.showSaveDialog(mainFrame)
+        == JFileChooser.APPROVE_OPTION)
+      {
+         outFile = fileChooser.getSelectedFile();
+         outputField.setText(outFile.toString());
+      }
    }
 
    public static void main(String[] args)
@@ -514,7 +696,14 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    File inFile, outFile;
 
    JFrame mainFrame;
+   JTextField inputField, outputField;
+   JFileChooser fileChooser;
+   JTextField titleField, authorField, pageCountField, sizeField;
    MessageDialog licenseDialog, aboutDialog;
+
+   public static final int FILE_FIELD_SIZE=32;
+   public static final int FILE_ROW_HGAP=5;
+   public static final int FILE_ROW_VGAP=10;
 
    public static final String ICON_DIR = "icons/";
    public static final String NAME = "jmakepdfx";

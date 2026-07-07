@@ -19,8 +19,22 @@ Nicola Talbot
 <!-- Menus -->
 <entry key="menu.file">File</entry>
 <entry key="menu.file.mnemonic">F</entry>
+
+<entry key="menu.file.input">Input PDF...</entry>
+<entry key="menu.file.input.mnemonic">I</entry>
+<entry key="menu.file.input.iconimage">inbox</entry>
+<entry key="menu.file.input.keystroke">ctrl O</entry>
+<entry key="menu.file.input.tooltip">Select input PDF file</entry>
+
+<entry key="menu.file.output">Output PDF...</entry>
+<entry key="menu.file.output.mnemonic">D</entry>
+<entry key="menu.file.output.iconimage">outbox</entry>
+<entry key="menu.file.output.keystroke">ctrl S</entry>
+<entry key="menu.file.output.tooltip">Select output PDF file</entry>
+
 <entry key="menu.file.quit">Quit</entry>
 <entry key="menu.file.quit.mnemonic">Q</entry>
+<entry key="menu.file.quit.keystroke">ctrl Q</entry>
 <entry key="menu.file.quit.tooltip">Exit application</entry>
 <entry key="menu.file.quit.description">This menu item quits the application</entry>
 
@@ -32,6 +46,34 @@ Nicola Talbot
 <entry key="menu.help.license">License</entry>
 <entry key="menu.help.license.mnemonic">L</entry>
 
+<!-- Main Component -->
+
+<entry key="inputfile.label">Input File:</entry>
+<entry key="inputfile.label.mnemonic">I</entry>
+
+<entry key="inputfile.choosein">Choose...</entry>
+<entry key="inputfile.choosein.iconimage">open</entry>
+
+<entry key="outputfile.label">Output File:</entry>
+<entry key="outputfile.label.mnemonic">O</entry>
+
+<entry key="outputfile.chooseout">Choose...</entry>
+<entry key="outputfile.chooseout.iconimage">open</entry>
+
+<entry key="pdfinfo.title">PDF Info</entry>
+
+<entry key="pdfinfo.pdftitle">Title:</entry>
+<entry key="pdfinfo.pdftitle.mnemonic">E</entry>
+
+<entry key="pdfinfo.pdfauthor">Author:</entry>
+<entry key="pdfinfo.pdfauthor.mnemonic">A</entry>
+
+<entry key="pdfinfo.pagecount">Page Count:</entry>
+<entry key="pdfinfo.filesize">File Size:</entry>
+
+<!-- File Filter -->
+
+<entry key="filter.pdf">PDF Document</entry>
 
 <!-- About Dialog -->
 
