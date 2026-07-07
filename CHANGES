@@ -1,0 +1,29 @@
+
+Moved from local subversion repository to GitHub
+
+v0.4.1b:
+
+  * Added -deletetmp and -nodeletetmp command line switches
+
+  * Added missing message.downloading and message.unpacking labels
+
+v0.4b:
+
+  * Another attempt at fixing the paths when running on Windows.
+
+  * getLabelWithValues now uses a StringBuilder instead of regex.
+
+v0.3b:
+
+  * Fixed paths when running on Windows. (Thanks to Paulo Cereda.)
+
+v0.2b:
+
+  * Added use ICC check box
+
+  * Added licence dialog
+
+  * Fixed reading title and author meta data
+
+v0.1b:
+  * Initial beta release

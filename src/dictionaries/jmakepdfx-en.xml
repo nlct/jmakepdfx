@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>English language file for jmakepdfx
+https://github.com/nlct/jmakepdfx
+GPL-3.0
+Nicola Talbot
+</comment>
+
+<!-- Menus -->
+<entry key="menu.file">File</entry>
+<entry key="menu.file.mnemonic">F</entry>
+<entry key="menu.file.quit">Quit</entry>
+<entry key="menu.file.quit.mnemonic">Q</entry>
+<entry key="menu.file.quit.tooltip">Exit application</entry>
+<entry key="menu.file.quit.description">This menu item quits the application</entry>
+
+<entry key="menu.help.manual.iconimage">manual</entry>
+
+<entry key="menu.help.about">About</entry>
+<entry key="menu.help.about.mnemonic">A</entry>
+
+<entry key="menu.help.license">License</entry>
+<entry key="menu.help.license.mnemonic">L</entry>
+
+
+<!-- About Dialog -->
+
+<entry key="about.title">About {0}</entry>
+<entry key="about.defaultparams">\meta'{'name'}'</entry>
+
+<!-- License Dialog -->
+
+<entry key="license.title">License</entry>
+
+<!-- Error Messages -->
+<entry key="error.batch_requires_in">Batch mode requires input file</entry>
+<entry key="error.batch_requires_out">Batch mode requires output file</entry>
+
+<entry key="error.syntax.only_one_inout">Only one input file and output file permitted</entry>
+
+</properties>

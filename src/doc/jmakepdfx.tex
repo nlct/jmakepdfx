@@ -1,0 +1,54 @@
+% arara: lualatex
+% arara: bib2gls
+% arara: lualatex
+% arara: lualatex
+\documentclass[toc=listof]{scrreport}
+
+\usepackage{fontspec}
+\setmainfont{Linux Libertine O}
+\usepackage
+ [
+%   debug=showwrgloss
+ ]{texjavahelp}
+
+\hypersetup{colorlinks,linkcolor=blue}
+\graphicspath{{images/}}
+
+\TJHRequireIcons{texjavahelplibicons}{16}{24}
+
+\title{Jmakepdfx}
+\author[Nicola L.C. Talbot]{Nicola L.C. Talbot\\\href{https://www.dickimaw-books.com/}{\nolinkurl{dickimaw-books.com}}}
+
+\TeXJavaHelpLoadResources{jmakepdfx,jmakepdfx-dict}
+
+\begin{document}
+\maketitle
+
+\frontmatter
+\tableofcontents
+
+\mainmatter
+\chapter{Introduction}
+\label{sec:intro}
+
+Jmakepdfx is a Java \gls{GUI} front-end application that uses GhostScript to convert
+PDF files to PDF/X compliant. This application comes with NO
+WARRANTY. In order to use this application you need to have both
+Java (at least JRE~8) and GhostScript installed. This application uses GhostScript's
+\code{/prepress} setting, which is analogous to Acrobat Distiller's
+\dq{Prepress Optimized}. This will likely create a larger PDF than
+your original.
+
+\begin{warning}
+Note that PostScript does not support transparency. If your
+PDF file includes transparent elements, the resulting PDF/X file
+will end up as a raster image.
+\end{warning}
+
+TODO
+
+\printmain
+
+\printindex
+
+\end{document}

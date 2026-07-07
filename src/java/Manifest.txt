@@ -1,0 +1,2 @@
+Main-Class: com/dickimawbooks/jmakepdfx/Jmakepdfx
+Class-Path: . texjavahelplib.jar
