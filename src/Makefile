@@ -16,9 +16,9 @@ ifeq ($(texjavahelplib),)
   texjavahelplib = $(HOME)/programming/java/texjavahelp/src/lib/texjavahelplib.jar
 endif
 
-lib/jmakepdfx.jar	: java/jmakepdfx/Manifest.txt \
+lib/jmakepdfx.jar	: java/Manifest.txt \
 	classes/com/dickimawbooks/jmakepdfx/Jmakepdfx.class \
-	classes/con/dickimawbooks/jmakepdfx/dictionaries/ \
+	classes/com/dickimawbooks/jmakepdfx/dictionaries/ \
 	dictionaries/jmakepdfx-en.xml \
 	lib/jmakepdfx-helpset.tjh
 	cp dictionaries/jmakepdfx-*.xml classes/com/dickimawbooks/jmakepdfx/dictionaries/
@@ -34,7 +34,7 @@ classes/com/dickimawbooks/jmakepdfx/dictionaries/	:
 classes/com/dickimawbooks/jmakepdfx/Jmakepdfx.class	: classes/com/dickimawbooks/jmakepdfx \
 	java/*.java
 	cd java; \
-	javac $(target_version) -d ../../classes \
+	javac $(target_version) -d ../classes \
 	-Xlint:unchecked -Xlint:deprecation \
 	-cp $(texjavahelplib) \
 	*.java
@@ -46,10 +46,10 @@ lib/jmakepdfx-helpset.tjh	: lib/helpset/index.xml doc/gpl-3.0-standalone.html
 	$(tjhziphelpset) \
 	--license-file doc/gpl-3.0-standalone.html en \
 	lib \
-	--output jmakepdfx-helpset.tjh
+	--output lib/jmakepdfx-helpset.tjh
 
 lib/helpset/index.xml	: doc/jmakepdfx.pdf
-	$(texjavahelpmk) doc/texjavahelp.tex lib/helpset
+	$(texjavahelpmk) doc/jmakepdfx.tex lib/helpset
 	@grep -E 'Package glossaries(-extra)? Warning' doc/jmakepdfx.log || true
 
 doc/jmakepdfx.pdf	: doc/jmakepdfx-dict.bib doc/jmakepdfx.bib doc/jmakepdfx.tex

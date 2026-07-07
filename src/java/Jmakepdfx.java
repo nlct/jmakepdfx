@@ -19,13 +19,16 @@
 
 package com.dickimawbooks.jmakepdfx;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.*;
 
 import com.dickimawbooks.texjavahelplib.*;
 
 public class Jmakepdfx extends AbstractCLI
 {
-   public Xml2Bib()
+   public Jmakepdfx()
    {
    }
 
@@ -193,16 +196,16 @@ public class Jmakepdfx extends AbstractCLI
    @Override
    protected void postCLIProcess() throws InvalidSyntaxException
    {
-      if (!isGUIMode)
+      if (!isGUIMode())
       {
          if (inFile == null)
          {
-            throw new InvalidSyntaxException(getMessage("error.batch_requires_in"))
+            throw new InvalidSyntaxException(getMessage("error.batch_requires_in"));
          }
 
          if (outFile == null)
          {
-            throw new InvalidSyntaxException(getMessage("error.batch_requires_out"))
+            throw new InvalidSyntaxException(getMessage("error.batch_requires_out"));
          }
       }
    }
@@ -234,12 +237,12 @@ public class Jmakepdfx extends AbstractCLI
       {
          jmakepdfx.initialiseHelpAndParse(args);
 
-         if (guiMode)
+         if (jmakepdfx.isGUIMode())
          {
          }
          else
          {
-            toPdfX();
+            jmakepdfx.toPdfX();
          }
       }
       catch (InvalidSyntaxException e)
@@ -258,7 +261,7 @@ public class Jmakepdfx extends AbstractCLI
    boolean guiMode = true;
    File inFile, outFile;
 
-   public static final NAME = "jmakepdfx";
+   public static final String NAME = "jmakepdfx";
    public static final String VERSION = "0.5";
    public static final String VERSION_DATE = "2026-07-07";
 }
