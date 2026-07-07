@@ -7,6 +7,15 @@ GPL-3.0
 Nicola Talbot
 </comment>
 
+<!--  Syntax -->
+<entry key="syntax.title">Syntax:</entry>
+<entry key="syntax.options">{0} [&lt;option&gt;]+ [&lt;in PDF&gt;] [&lt;out PDF&gt;]</entry>
+<entry key="syntax.in">{0} (or {1})	Input PDF file (required for batch mode).</entry>
+<entry key="syntax.out">{0} (or {1})	Output PDF file (required for batch mode).</entry>
+<entry key="syntax.gui">{0} (or {1})	Run in GUI mode (default).</entry>
+<entry key="syntax.batch">{0} (or {1})	Run in batch mode.</entry>
+
+
 <!-- Menus -->
 <entry key="menu.file">File</entry>
 <entry key="menu.file.mnemonic">F</entry>

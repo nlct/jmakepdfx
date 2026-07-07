@@ -100,6 +100,9 @@ public class Jmakepdfx extends AbstractCLI
 
       printSyntaxItem(getMessage("syntax.out", "--output", "-o"));
 
+      printSyntaxItem(getMessage("syntax.gui", "--[no]gui", "-g"));
+      printSyntaxItem(getMessage("syntax.batch", "--batch", "-b"));
+
       System.out.println();
 
       printCommonCLISyntax();
