@@ -121,6 +121,8 @@ Nicola Talbot
 <entry key="properties.startup">Startup Directory</entry>
 <entry key="properties.startup.home">Home</entry>
 <entry key="properties.startup.home.mnemonic">M</entry>
+<entry key="properties.startup.cwd">Current Working Directory</entry>
+<entry key="properties.startup.cwd.mnemonic">W</entry>
 <entry key="properties.startup.last">Last</entry>
 <entry key="properties.startup.last.mnemonic">S</entry>
 <entry key="properties.startup.custom">Custom</entry>
@@ -136,6 +138,12 @@ Nicola Talbot
 <entry key="properties.timeout.mnemonic">X</entry>
 <entry key="properties.timeout.minutes">Minutes</entry>
 
+<entry key="button.file_choose">Choose...</entry>
+<entry key="button.file_choose.iconimage">open</entry>
+
+<entry key="file_chooser.select">Select</entry>
+<entry key="file_chooser.select.mnemonic">S</entry>
+
 <!-- About Dialog -->
 
 <entry key="about.title">About {0}</entry>
@@ -146,7 +154,8 @@ Nicola Talbot
 <entry key="license.title">License</entry>
 
 <!-- Messages -->
-<entry key="message.init">Use {0} to select a PDF file</entry>
+<entry key="message.select_input">Use {0} to select the input PDF file</entry>
+<entry key="message.select_output">Use {0} to select the output PDF file</entry>
 <entry key="message.running">Running {0}</entry>
 <entry key="message.file_loaded">Check the required colour profile and click on ''{0}''</entry>
 <entry key="message.confirm">Confirm</entry>

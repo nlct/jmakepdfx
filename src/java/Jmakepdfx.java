@@ -313,6 +313,9 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       mainFrame.getContentPane().add(toolbar, 
         toolbarOrient == JToolBar.HORIZONTAL ? "North" : "West");
 
+      statusField = new JLabel();
+      mainFrame.getContentPane().add(statusField, "South");
+
       JMenuBar mBar = new JMenuBar();
       mainFrame.setJMenuBar(mBar);
 
@@ -395,6 +398,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
       JMenu settingsM = helpLib.createJMenu("menu.settings");
       mBar.add(settingsM);
+
+      propertiesDialog = new PropertiesDialog(this);
 
       TJHAbstractAction settingsAction = new TJHAbstractAction(helpLib,
         "menu.settings", "editsettings", helpLib.getKeyStroke("menu.settings.editsettings"),
@@ -582,6 +587,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
          setOutputFile(outFile);
       }
 
+      if (inFile == null && outFile == null)
+      {
+         updateStatus();
+      }
+
       mainFrame.pack();
       mainFrame.setLocationRelativeTo(null);
       mainFrame.setVisible(true);
@@ -753,6 +763,55 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       }
    }
 
+   public JFrame getFrame()
+   {
+      return mainFrame;
+   }
+
+   public JpdfxProperties getProperties()
+   {
+      return properties;
+   }
+
+   public void setStatus(String msg)
+   {
+      if (statusField != null)
+      {
+         statusField.setText(msg);
+      }
+   }
+
+   public void updateStatus()
+   {
+      if (inFile == null)
+      {
+         setStatus(getMessageWithFallback("message.select_input",
+           "Use {0} to select the input PDF file",
+           String.format("%s > %s",
+             getMessageWithFallback("menu.file", "File"),
+             getMessageWithFallback("menu.file.input", "Input PDF...")
+           )
+         ));
+      }
+      else if (outFile == null)
+      {
+         setStatus(getMessageWithFallback("message.select_output",
+           "Use {0} to select the output PDF file",
+           String.format("%s > %s",
+             getMessageWithFallback("menu.file", "File"),
+             getMessageWithFallback("menu.file.output", "Output PDF...")
+           )
+         ));
+      }
+      else
+      {
+         setStatus(getMessageWithFallback("message.file_loaded",
+           "Check the required colour profile and click on ''{0}''",
+            getMessageWithFallback(convertAction.getDisplayName(), "Convert")
+         ));
+      }
+   }
+
    public boolean isGrayProfile()
    {
       return greyButton == null ? properties.isGrayProfile() : greyButton.isSelected();
@@ -800,7 +859,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
    public void openSettings()
    {
-// TODO
+      propertiesDialog.display();
    }
 
    public void reset()
@@ -840,6 +899,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       }
 
       convertAction.setEnabled(inFile != null && outFile != null);
+      updateStatus();
    }
 
    public boolean supportsInput(File file)
@@ -905,6 +965,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       }
 
       convertAction.setEnabled(inFile != null && outFile != null);
+      updateStatus();
    }
 
    public boolean supportsOutput(File file)
@@ -1001,10 +1062,12 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    JRadioButton greyButton, cmykButton;
    JCheckBox iccButton;
    TJHAbstractAction convertAction;
+   JLabel statusField;
    MessageDialog licenseDialog, aboutDialog;
    javax.swing.filechooser.FileFilter pdfFilter;
 
    JpdfxProperties properties;
+   PropertiesDialog propertiesDialog;
 
    public static final int FILE_FIELD_SIZE=32;
    public static final int FILE_ROW_HGAP=5;
