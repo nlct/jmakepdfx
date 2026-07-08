@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.FlowLayout;
 
@@ -298,9 +299,9 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       mBar.add(fileM);
 
       fileChooser = new JFileChooser();
-      FileNameExtensionFilter filter = new FileNameExtensionFilter(
+      pdfFilter = new FileNameExtensionFilter(
         getMessage("filter.pdf"), "pdf");
-      fileChooser.setFileFilter(filter);
+      fileChooser.setFileFilter(pdfFilter);
 
       TJHAbstractAction inputAction = new TJHAbstractAction(helpLib,
         "menu.file", "input", helpLib.getKeyStroke("menu.input"),
@@ -372,10 +373,14 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       JComponent mainComp = Box.createVerticalBox();
       mainFrame.getContentPane().add(new JScrollPane(mainComp), "Center");
 
+      InputTransferHandler inHandler = new InputTransferHandler(this);
+      OutputTransferHandler outHandler = new OutputTransferHandler(this);
+
       JComponent row;
 
       inputField = new JTextField(FILE_FIELD_SIZE);
       inputField.setEditable(false);
+      inputField.setBorder(BorderFactory.createEmptyBorder());
 
       if (inFile != null)
       {
@@ -391,12 +396,18 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row = createRow(FILE_ROW_HGAP, FILE_ROW_VGAP);
       mainComp.add(row);
 
+      row.setTransferHandler(inHandler);
+      inputLabel.setTransferHandler(inHandler);
+      inputField.setTransferHandler(inHandler);
+      chooseInButton.setTransferHandler(inHandler);
+
       row.add(inputLabel);
       row.add(inputField);
       row.add(chooseInButton);
 
       outputField = new JTextField(FILE_FIELD_SIZE);
       outputField.setEditable(false);
+      outputField.setBorder(BorderFactory.createEmptyBorder());
 
       if (outFile != null)
       {
@@ -414,6 +425,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.add(outputLabel);
       row.add(outputField);
       row.add(chooseOutButton);
+
+      row.setTransferHandler(outHandler);
+      outputLabel.setTransferHandler(outHandler);
+      outputField.setTransferHandler(outHandler);
+      chooseOutButton.setTransferHandler(outHandler);
 
       JComponent infoComp = Box.createVerticalBox();
       infoComp.setAlignmentX(0f);
@@ -459,6 +475,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       JComponent row = new JPanel(new FlowLayout(FlowLayout.LEADING, hgap, vgap));
 
       row.setAlignmentX(0f);
+      row.setBackground(Color.WHITE);
+      row.setBorder(BorderFactory.createEtchedBorder());
 
       return row;
    }
@@ -585,9 +603,19 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       if (fileChooser.showOpenDialog(mainFrame)
         == JFileChooser.APPROVE_OPTION)
       {
-         inFile = fileChooser.getSelectedFile();
-         inputField.setText(inFile.toString());
+         setInputFile(fileChooser.getSelectedFile());
       }
+   }
+
+   public void setInputFile(File file)
+   {
+      inFile = file;
+      inputField.setText(inFile.toString());
+   }
+
+   public boolean supportsInput(File file)
+   {
+      return pdfFilter.accept(file);
    }
 
    public void selectOutputFile()
@@ -610,9 +638,19 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       if (fileChooser.showSaveDialog(mainFrame)
         == JFileChooser.APPROVE_OPTION)
       {
-         outFile = fileChooser.getSelectedFile();
-         outputField.setText(outFile.toString());
+         setOutputFile(fileChooser.getSelectedFile());
       }
+   }
+
+   public void setOutputFile(File file)
+   {
+      outFile = file;
+      outputField.setText(outFile.toString());
+   }
+
+   public boolean supportsOutput(File file)
+   {
+      return pdfFilter.accept(file);
    }
 
    public static void main(String[] args)
@@ -700,6 +738,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    JFileChooser fileChooser;
    JTextField titleField, authorField, pageCountField, sizeField;
    MessageDialog licenseDialog, aboutDialog;
+   javax.swing.filechooser.FileFilter pdfFilter;
 
    public static final int FILE_FIELD_SIZE=32;
    public static final int FILE_ROW_HGAP=5;
