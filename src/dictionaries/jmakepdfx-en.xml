@@ -20,6 +20,13 @@ Nicola Talbot
 <entry key="menu.file">File</entry>
 <entry key="menu.file.mnemonic">F</entry>
 
+<entry key="menu.file.recent">Recent</entry>
+<entry key="menu.file.recent.mnemonic">T</entry>
+
+<entry key="menu.file.recent.clearrecent">Clear</entry>
+<entry key="menu.file.recent.clearrecent.mnemonic">C</entry>
+<entry key="menu.file.recent.clearrecent.tooltip">Clear recent files list</entry>
+
 <entry key="menu.file.input">Input PDF...</entry>
 <entry key="menu.file.input.mnemonic">I</entry>
 <entry key="menu.file.input.iconimage">inbox</entry>
@@ -32,11 +39,34 @@ Nicola Talbot
 <entry key="menu.file.output.keystroke">ctrl S</entry>
 <entry key="menu.file.output.tooltip">Select output PDF file</entry>
 
+<entry key="menu.file.reset">Reset</entry>
+<entry key="menu.file.reset.mnemonic">R</entry>
+<entry key="menu.file.reset.keystroke">ctrl W</entry>
+
 <entry key="menu.file.quit">Quit</entry>
 <entry key="menu.file.quit.mnemonic">Q</entry>
 <entry key="menu.file.quit.keystroke">ctrl Q</entry>
 <entry key="menu.file.quit.tooltip">Exit application</entry>
 <entry key="menu.file.quit.description">This menu item quits the application</entry>
+
+<entry key="menu.tools">Tools</entry>
+<entry key="menu.tools.mnemonic">F</entry>
+
+<entry key="menu.tools.convert">Convert</entry>
+<entry key="menu.tools.convert.mnemonic">C</entry>
+<entry key="menu.tools.convert.tooltip">Convert selected input file</entry>
+
+<entry key="menu.tools.abort">Abort</entry>
+<entry key="menu.tools.abort.mnemonic">A</entry>
+<entry key="menu.tools.abort.iconimage">stop</entry>
+<entry key="menu.tools.abort.tooltip">Abort current operation</entry>
+
+<entry key="menu.settings">Settings</entry>
+<entry key="menu.tools.mnemonic">S</entry>
+
+<entry key="menu.settings.editsettings">Edit...</entry>
+<entry key="menu.settings.editsettings.mnemonic">E</entry>
+<entry key="menu.settings.editsettings.iconimage">preferences</entry>
 
 <entry key="menu.help.manual.iconimage">manual</entry>
 
@@ -76,10 +106,35 @@ Nicola Talbot
 <entry key="profile.greyscale.mnemonic">G</entry>
 <entry key="profile.cmyk">CMYK</entry>
 <entry key="profile.cmyk.mnemonic">K</entry>
+<entry key="profile.use_icc">Use ICC</entry>
+<entry key="profile.use_icc.mnemonic">C</entry>
 
 <!-- File Filter -->
 
 <entry key="filter.pdf">PDF Document</entry>
+
+<!-- Properties Dialog -->
+
+<entry key="properties.title">Properties</entry>
+<entry key="properties.query.location.viewer">Please specify location of {0} viewer</entry>
+<entry key="properties.query.location.app">Please specify location of {0} application</entry>
+<entry key="properties.startup">Startup Directory</entry>
+<entry key="properties.startup.home">Home</entry>
+<entry key="properties.startup.home.mnemonic">M</entry>
+<entry key="properties.startup.last">Last</entry>
+<entry key="properties.startup.last.mnemonic">S</entry>
+<entry key="properties.startup.custom">Custom</entry>
+<entry key="properties.startup.custom.mnemonic">U</entry>
+<entry key="properties.path.gs">Path to GhostScript</entry>
+<entry key="properties.path.gs.mnemonic">G</entry>
+<entry key="properties.path.pdfviewer">Path to PDF viewer</entry>
+<entry key="properties.path.pdfviewer.mnemonic">P</entry>
+<entry key="properties.path.icc">Path to ICC File</entry>
+<entry key="properties.path.icc.mnemonic">I</entry>
+
+<entry key="properties.timeout">Maximum Process Time:</entry>
+<entry key="properties.timeout.mnemonic">X</entry>
+<entry key="properties.timeout.minutes">Minutes</entry>
 
 <!-- About Dialog -->
 
@@ -90,10 +145,55 @@ Nicola Talbot
 
 <entry key="license.title">License</entry>
 
+<!-- Messages -->
+<entry key="message.init">Use {0} to select a PDF file</entry>
+<entry key="message.running">Running {0}</entry>
+<entry key="message.file_loaded">Check the required colour profile and click on ''{0}''</entry>
+<entry key="message.confirm">Confirm</entry>
+<entry key="message.confirm.overwrite">File ''{0}'' already exists.
+Overwrite?</entry>
+<entry key="message.writing">Writing file ''{0}''</entry>
+<entry key="message.completed">Conversion completed.</entry>
+<entry key="message.failed">Conversion failed.</entry>
+<entry key="message.done">Done</entry>
+<entry key="message.getinfo">Getting PDF info.</entry>
+<entry key="message.failedinfo">Something was wrong with your PDF file.</entry>
+<entry key="message.confirm.abort">Are you sure you want to abort this process?</entry>
+<entry key="message.confirm.quit">There seems to still be a process running.
+Are you sure you want to quit?
+Click ''{0}'' to abort process and quit application.
+Click ''{1}'' to cancel quit request.</entry>
+<entry key="message.confirm.yes">Yes</entry>
+<entry key="message.confirm.yes.mnemonic">Y</entry>
+<entry key="message.confirm.no">No</entry>
+<entry key="message.confirm.no.mnemonic">N</entry>
+
 <!-- Error Messages -->
 <entry key="error.batch_requires_in">Batch mode requires input file</entry>
 <entry key="error.batch_requires_out">Batch mode requires output file</entry>
 
 <entry key="error.syntax.only_one_inout">Only one input file and output file permitted</entry>
+<entry key="error.syntax.invalid_value">Invalid {0} value: {1}</entry>
+
+<entry key="error.same_outin">Output file must not be the same as the input file.</entry>
+<entry key="error.home_null">NULL home directory</entry>
+<entry key="error.no_properties">Unable to load properties</entry>
+<entry key="error.properties_save_failed">Failed to save properties</entry>
+
+<entry key="error.timedout">Process timed-out (process time limit: {0}ms)</entry>
+<entry key="error.cant_copy">Can''t copy file to ''{0}'', file already exists</entry>
+<entry key="error.cant_move">Can''t move file to ''{0}'', file already exists</entry>
+<entry key="error.cant_mkdir">Can''t create directory: {0}</entry>
+
+<entry key="error.no_gs">This application needs GhostScript. Please use the {0} dialog to specify the path to the GhostScript executable.</entry>
+<entry key="error.no_icc">Can''t proceed without an ICC file. Please use the {0} dialog to specify the path to an ICC file.</entry>
+<entry key="error.no_outputfile">No output file specified.</entry>
+<entry key="error.output_is_dir">Output file must be a regular file. ''{0}'' is a directory.</entry>
+<entry key="error.noinfo">Failed to get PDF information from file ''{0}''.
+{1}</entry>
+<entry key="error.gsmess">GhostScript reported: {0}</entry>
+<entry key="error.conversion_failed">Conversion failed
+{0}</entry>
+
 
 </properties>

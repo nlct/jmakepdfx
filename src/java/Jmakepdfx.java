@@ -42,8 +42,10 @@ import javax.imageio.ImageIO;
 
 import javax.swing.Box;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -53,6 +55,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -236,6 +239,20 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    }
 
    @Override
+   protected void preCLIProcess() throws InvalidSyntaxException
+   {
+      try
+      {
+         properties = JpdfxProperties.fetchProperties(this);
+      }
+      catch (IOException e)
+      {
+         warning(e.getMessage());
+         properties = new JpdfxProperties(this);
+      }
+   }
+
+   @Override
    protected void postCLIProcess() throws InvalidSyntaxException
    {
       if (!isGUIMode())
@@ -291,8 +308,10 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
          }
       });
 
-      JToolBar toolbar = new JToolBar();
-      mainFrame.getContentPane().add(toolbar, "North");
+      int toolbarOrient = properties.getToolBarOrientation();
+      toolbar = new JToolBar(toolbarOrient);
+      mainFrame.getContentPane().add(toolbar, 
+        toolbarOrient == JToolBar.HORIZONTAL ? "North" : "West");
 
       JMenuBar mBar = new JMenuBar();
       mainFrame.setJMenuBar(mBar);
@@ -304,9 +323,18 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       pdfFilter = new FileNameExtensionFilter(
         getMessage("filter.pdf"), "pdf");
       fileChooser.setFileFilter(pdfFilter);
+      fileChooser.setCurrentDirectory(properties.getDefaultDirectoryFile());
+
+      recentM = helpLib.createJMenu("menu.file.recent");
+      fileM.add(recentM);
+
+      recentM.add(helpLib.createJMenuItem("menu.file.recent", "clearrecent", this));
+      recentM.addSeparator();
+
+      properties.setRecentFiles(recentM, this);
 
       TJHAbstractAction inputAction = new TJHAbstractAction(helpLib,
-        "menu.file", "input", helpLib.getKeyStroke("menu.input"),
+        "menu.file", "input", helpLib.getKeyStroke("menu.file.input"),
         helpLib.getDefaultButtonActionOmitKeys())
          {
             @Override
@@ -320,7 +348,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       toolbar.add(inputAction);
 
       TJHAbstractAction outputAction = new TJHAbstractAction(helpLib,
-        "menu.file", "output", helpLib.getKeyStroke("menu.output"),
+        "menu.file", "output", helpLib.getKeyStroke("menu.file.output"),
         helpLib.getDefaultButtonActionOmitKeys())
          {
             @Override
@@ -333,8 +361,54 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       fileM.add(outputAction);
       toolbar.add(outputAction);
 
+      fileM.add(helpLib.createJMenuItem("menu.file", "reset", this,
+        helpLib.getKeyStroke("menu.file.reset")));
+
       fileM.add(helpLib.createJMenuItem("menu.file", "quit", this,
         helpLib.getKeyStroke("menu.file.quit")));
+
+      JMenu toolsM = helpLib.createJMenu("menu.tools");
+      mBar.add(toolsM);
+
+      convertAction = new TJHAbstractAction(helpLib,
+        "menu.tools", "convert", helpLib.getKeyStroke("menu.tools.convert"),
+        helpLib.getDefaultButtonActionOmitKeys())
+         {
+            @Override
+            public void doAction()
+            {
+               try
+               {
+                  toPdfX();
+               }
+               catch (IOException e)
+               {
+                  error(getMessageWithFallback("error.conversion_failed",
+                     "Conversion failed\n{0}", e.getMessage()), e);
+               }
+            }
+         };
+
+       convertAction.setEnabled(false);
+
+       toolsM.add(convertAction);
+
+      JMenu settingsM = helpLib.createJMenu("menu.settings");
+      mBar.add(settingsM);
+
+      TJHAbstractAction settingsAction = new TJHAbstractAction(helpLib,
+        "menu.settings", "editsettings", helpLib.getKeyStroke("menu.settings.editsettings"),
+        helpLib.getDefaultButtonActionOmitKeys())
+         {
+            @Override
+            public void doAction()
+            {
+               openSettings();
+            }
+         };
+
+      settingsM.add(settingsAction);
+      toolbar.add(settingsAction);
 
       JMenu helpM = helpLib.createJMenu("menu.help");
       mBar.add(helpM);
@@ -482,6 +556,22 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
       row.add(helpLib.createJLabel("profile.title"));
 
+      ButtonGroup btnGrp = new ButtonGroup();
+
+      greyButton = helpLib.createJRadioButton("profile", "greyscale",
+         properties.isGrayProfile(), btnGrp);
+      row.add(greyButton);
+
+      cmykButton = helpLib.createJRadioButton("profile", "cmyk",
+         !greyButton.isSelected(), btnGrp);
+      row.add(cmykButton);
+
+      iccButton = helpLib.createJCheckBox("profile", "use_icc",
+         properties.isUseICC());
+      row.add(iccButton);
+
+      row.add(new JButton(convertAction));
+
       if (inFile != null)
       {
          setInputFile(inFile);
@@ -627,6 +717,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       {
          quit();
       }
+      else if ("clearrecent".equals(action))
+      {
+         properties.clearRecentList();
+         properties.setRecentFiles(recentM, this);
+      }
       else if ("license".equals(action))
       {
          licenseDialog.setVisible(true);
@@ -635,12 +730,83 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       {
          aboutDialog.setVisible(true);
       }
+      else if ("reset".equals(action))
+      {
+         reset();
+      }
+      else if (action != null)
+      {
+         try
+         {
+            int idx = Integer.parseInt(action);
+
+            if (idx >= 0 && idx < properties.getRecentFileNameCount())
+            {
+               String filename = properties.getRecentFileName(idx);
+
+               setInputFile(new File(filename));
+            }
+         }
+         catch (NumberFormatException e)
+         {
+         }
+      }
+   }
+
+   public boolean isGrayProfile()
+   {
+      return greyButton == null ? properties.isGrayProfile() : greyButton.isSelected();
+   }
+
+   public boolean isCMYKProfile()
+   {
+      return cmykButton == null ? properties.isCMYKProfile() : cmykButton.isSelected();
+   }
+
+   public boolean isUseICC()
+   {
+      return iccButton == null ? properties.isUseICC() : iccButton.isSelected();
    }
 
    public void quit()
    {
 // TODO check if process running
+
+      try
+      {
+         properties.setToolBarOrientation(toolbar.getOrientation());
+
+         if (greyButton.isSelected())
+         {
+            properties.setGrayProfile();
+         }
+         else
+         {
+            properties.setCMYKProfile();
+         }
+
+         properties.setUseICC(iccButton.isSelected());
+
+         properties.save();
+      }
+      catch (IOException e)
+      {
+         error(getMessageWithFallback("error.properties_save_failed",
+               "Failed to save properties"), e);
+      }
+
       System.exit(0);
+   }
+
+   public void openSettings()
+   {
+// TODO
+   }
+
+   public void reset()
+   {
+      setInputFile(null);
+      setOutputFile(null);
    }
 
    public void selectInputFile()
@@ -660,12 +826,45 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    public void setInputFile(File file)
    {
       inFile = file;
-      inputField.setText(inFile.toString());
+
+      if (file == null)
+      {
+         inputField.setText("");
+      }
+      else
+      {
+         inputField.setText(inFile.toString());
+
+         properties.addRecentFile(file);
+         properties.setRecentFiles(recentM, this);
+      }
+
+      convertAction.setEnabled(inFile != null && outFile != null);
    }
 
    public boolean supportsInput(File file)
    {
       return pdfFilter.accept(file);
+   }
+
+   public File getCurrentDirectory()
+   {
+      if (fileChooser == null)
+      {
+         File parent = inFile == null ? null : inFile.getParentFile();
+
+         return parent == null ? new File(System.getProperty("user.dir")) : parent;
+      }
+      else if (inFile == null)
+      {
+         return fileChooser.getCurrentDirectory();
+      }
+      else
+      {
+         File parent = inFile.getParentFile();
+
+         return parent == null ? fileChooser.getCurrentDirectory() : parent;
+      }
    }
 
    public void selectOutputFile()
@@ -695,7 +894,17 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    public void setOutputFile(File file)
    {
       outFile = file;
-      outputField.setText(outFile.toString());
+
+      if (file == null)
+      {
+         outputField.setText("");
+      }
+      else
+      {
+         outputField.setText(outFile.toString());
+      }
+
+      convertAction.setEnabled(inFile != null && outFile != null);
    }
 
    public boolean supportsOutput(File file)
@@ -784,11 +993,18 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    File inFile, outFile;
 
    JFrame mainFrame;
+   JToolBar toolbar;
+   JMenu recentM;
    JTextField inputField, outputField;
    JFileChooser fileChooser;
    JTextField titleField, authorField, pageCountField, sizeField;
+   JRadioButton greyButton, cmykButton;
+   JCheckBox iccButton;
+   TJHAbstractAction convertAction;
    MessageDialog licenseDialog, aboutDialog;
    javax.swing.filechooser.FileFilter pdfFilter;
+
+   JpdfxProperties properties;
 
    public static final int FILE_FIELD_SIZE=32;
    public static final int FILE_ROW_HGAP=5;
