@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Vector;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.FlowLayout;
 
@@ -382,11 +384,6 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       inputField.setEditable(false);
       inputField.setBorder(BorderFactory.createEmptyBorder());
 
-      if (inFile != null)
-      {
-         inputField.setText(inFile.toString());
-      }
-
       JButton chooseInButton = helpLib.createJButton("inputfile", "choosein", this,
         helpLib.getIconPrefix("inputfile.choosein", "open"), true, true);
 
@@ -405,14 +402,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.add(inputField);
       row.add(chooseInButton);
 
+      clampCompMaxHeight(row, 0, 0);
+
       outputField = new JTextField(FILE_FIELD_SIZE);
       outputField.setEditable(false);
       outputField.setBorder(BorderFactory.createEmptyBorder());
-
-      if (outFile != null)
-      {
-         outputField.setText(outFile.toString());
-      }
 
       JButton chooseOutButton = helpLib.createJButton("outputfile", "chooseout", this,
         helpLib.getIconPrefix("inputfile.chooseout", "open"), true, true);
@@ -425,6 +419,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.add(outputLabel);
       row.add(outputField);
       row.add(chooseOutButton);
+
+      clampCompMaxHeight(row, 0, 0);
 
       row.setTransferHandler(outHandler);
       outputLabel.setTransferHandler(outHandler);
@@ -448,6 +444,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.add(titleLabel);
       row.add(titleField);
 
+      clampCompMaxHeight(row, 0, 0);
+
       row = createRow();
       infoComp.add(row);
 
@@ -455,6 +453,44 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       JLabel authorLabel = helpLib.createJLabel(labelGrp, "pdfinfo.pdfauthor", authorField);
       row.add(authorLabel);
       row.add(authorField);
+
+      clampCompMaxHeight(row, 0, 0);
+
+      row = createRow();
+      infoComp.add(row);
+
+      pageCountField = new JTextField();
+      pageCountField.setEditable(false);
+      JLabel pageCountLabel = helpLib.createJLabel(labelGrp, "pdfinfo.pagecount", null);
+
+      row.add(pageCountLabel);
+      row.add(pageCountField);
+
+      row.add(createHorizontalSpacer(10));
+
+      sizeField = new JTextField();
+      sizeField.setEditable(false);
+      JLabel sizeLabel = helpLib.createJLabel(labelGrp, "pdfinfo.filesize", null);
+
+      row.add(sizeLabel);
+      row.add(sizeField);
+
+      clampCompMaxHeight(row, 0, 0);
+
+      row = createRow();
+      mainComp.add(row);
+
+      row.add(helpLib.createJLabel("profile.title"));
+
+      if (inFile != null)
+      {
+         setInputFile(inFile);
+      }
+
+      if (outFile != null)
+      {
+         setOutputFile(outFile);
+      }
 
       mainFrame.pack();
       mainFrame.setLocationRelativeTo(null);
@@ -479,6 +515,20 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.setBorder(BorderFactory.createEtchedBorder());
 
       return row;
+   }
+
+   protected Component createHorizontalSpacer(int size)
+   {
+      Component comp = Box.createHorizontalStrut(size);
+      return comp;
+   }
+
+   public void clampCompMaxHeight(JComponent comp, int xpad, int ypad)
+   {
+      Dimension dim = comp.getPreferredSize();
+      dim.width = (int)comp.getMaximumSize().getWidth() + xpad;
+      dim.height += ypad;
+      comp.setMaximumSize(dim);
    }
 
    public ImageIcon getAppIcon(String name)

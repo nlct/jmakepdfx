@@ -71,6 +71,12 @@ Nicola Talbot
 <entry key="pdfinfo.pagecount">Page Count:</entry>
 <entry key="pdfinfo.filesize">File Size:</entry>
 
+<entry key="profile.title">Profile:</entry>
+<entry key="profile.greyscale">Greyscale</entry>
+<entry key="profile.greyscale.mnemonic">G</entry>
+<entry key="profile.cmyk">CMYK</entry>
+<entry key="profile.cmyk.mnemonic">K</entry>
+
 <!-- File Filter -->
 
 <entry key="filter.pdf">PDF Document</entry>
