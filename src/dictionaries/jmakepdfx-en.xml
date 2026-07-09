@@ -204,5 +204,6 @@ Click ''{1}'' to cancel quit request.</entry>
 <entry key="error.conversion_failed">Conversion failed
 {0}</entry>
 
+<entry key="error.properties.missing_custom_dir">Custom setting requires a directory name</entry>
 
 </properties>

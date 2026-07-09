@@ -24,6 +24,9 @@ import java.io.File;
 import java.awt.Container;
 import java.awt.FlowLayout;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
 
 import com.dickimawbooks.texjavahelplib.TeXJavaHelpLib;
@@ -34,6 +37,11 @@ public class FileField extends JPanel
    public FileField(Jmakepdfx application, Container parent, JFileChooser fileChooser)
    {
       this(application, parent, null, fileChooser, JFileChooser.FILES_ONLY);
+   }
+
+   public FileField(Jmakepdfx application, Container parent, JFileChooser fileChooser, JLabel jlabel)
+   {
+      this(application, parent, null, fileChooser, JFileChooser.FILES_ONLY, jlabel);
    }
 
    public FileField(Jmakepdfx application, Container parent, JFileChooser fileChooser,
@@ -49,9 +57,27 @@ public class FileField extends JPanel
    }
 
    public FileField(Jmakepdfx application, Container parent, String fileName,
+       JFileChooser fileChooser, JLabel jlabel)
+   {
+      this(application, parent, fileName, fileChooser, JFileChooser.FILES_ONLY, jlabel);
+   }
+
+   public FileField(Jmakepdfx application, Container parent, String fileName,
       JFileChooser fileChooser, int mode)
    {
+      this(application, parent, fileName, fileChooser, mode, null);
+   }
+
+   public FileField(Jmakepdfx application, Container parent, String fileName,
+      JFileChooser fileChooser, int mode, JLabel jlabel)
+   {
       super(new FlowLayout(FlowLayout.LEADING));
+
+      if (fileChooser == null)
+      {
+         throw new NullPointerException();
+      }
+
       this.application = application;
       this.parent = parent;
       this.fileChooser = fileChooser;
@@ -61,7 +87,16 @@ public class FileField extends JPanel
 
       setAlignmentX(LEFT_ALIGNMENT);
 
-      textField = new JTextField();
+      textField = new JTextField(Jmakepdfx.FILE_FIELD_SIZE);
+
+      if (jlabel != null)
+      {
+         add(jlabel);
+         jlabel.setLabelFor(textField);
+
+         add(Box.createHorizontalStrut(Jmakepdfx.FILE_ROW_HGAP));
+      }
+
       add(textField);
 
       if (fileName != null)
@@ -69,18 +104,19 @@ public class FileField extends JPanel
          textField.setText(fileName);
       }
 
-      TJHAbstractAction chooseAction = new TJHAbstractAction(helpLib,
-        "button", "file_choose", helpLib.getKeyStroke("button.file_choose"),
-        helpLib.getDefaultButtonActionOmitKeys())
+      add(Box.createHorizontalStrut(Jmakepdfx.FILE_ROW_HGAP));
+
+      button = helpLib.createJButton("button", "file_choose",
+         new ActionListener()
          {
             @Override
-            public void doAction()
+            public void actionPerformed(ActionEvent evt)
             {
                openFileChooser();
             }
-         };
+         }
+      );
 
-      button = new JButton(chooseAction);
       add(button);
    }
 
@@ -122,7 +158,7 @@ public class FileField extends JPanel
 
    public void setFileName(String filename)
    {
-      textField.setText(filename);
+      textField.setText(filename == null ? "" : filename);
    }
 
    public void setFile(File file)

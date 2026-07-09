@@ -483,12 +483,12 @@ public class JpdfxProperties extends Properties
       }
    }
 
-   public String getICCFile()
+   public String getICCFileName()
    {
       return getProperty("iccfile");
    }
 
-   public void setICCFile(String iccfile)
+   public void setICCFileName(String iccfile)
    {
       setProperty("iccfile", iccfile);
    }
