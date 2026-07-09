@@ -20,8 +20,11 @@
 package com.dickimawbooks.jmakepdfx;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 import java.util.Vector;
@@ -68,7 +71,8 @@ import org.xml.sax.SAXException;
 
 import com.dickimawbooks.texjavahelplib.*;
 
-public class Jmakepdfx extends AbstractCLI implements ActionListener
+public class Jmakepdfx extends AbstractCLI
+  implements ActionListener,UserCancellationListener
 {
    public Jmakepdfx()
    {
@@ -145,6 +149,9 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       printSyntaxItem(getMessage("syntax.gui", "--[no]gui", "-g"));
       printSyntaxItem(getMessage("syntax.batch", "--batch", "-b"));
 
+      printSyntaxItem(getMessage("syntax.title", "--title", "-t"));
+      printSyntaxItem(getMessage("syntax.author", "--author", "-a"));
+
       System.out.println();
 
       printCommonCLISyntax();
@@ -160,6 +167,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    {
       if (arg.equals("--in") || arg.equals("-i")
        || arg.equals("--output") || arg.equals("-o")
+       || arg.equals("--title") || arg.equals("-t")
+       || arg.equals("--author") || arg.equals("-a")
          )
       {
          return 1;
@@ -230,6 +239,26 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
          outFile = new File(returnVals[0].toString());
       }
+      else if (isArg(arg, "--title", "-t", returnVals))
+      {
+         if (returnVals[0] == null)
+         {
+            throw new InvalidSyntaxException(
+               getMessage("error.clisyntax.missing_value", arg));
+         }
+
+         pdfTitle = returnVals[0].toString();
+      }
+      else if (isArg(arg, "--author", "-a", returnVals))
+      {
+         if (returnVals[0] == null)
+         {
+            throw new InvalidSyntaxException(
+               getMessage("error.clisyntax.missing_value", arg));
+         }
+
+         pdfAuthor = returnVals[0].toString();
+      }
       else
       {
          return false;
@@ -283,17 +312,13 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
        "jmakepdfx");
    }
 
-   public void toPdfX() throws IOException
-   {
-// TODO
-   }
-
    protected void initGuiAndShow() throws IOException,SAXException
    {
       mainFrame = new JFrame(NAME);
 
       TeXJavaHelpLib helpLib = getHelpLib();
 
+      helpLib.setHelpFontDialogLabel(null);// help chapter not present in manual
       helpLib.setHelpSetZipName(NAME.toLowerCase()+"-helpset.tjh");
       helpLib.initHelpSet();
 
@@ -380,15 +405,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
             @Override
             public void doAction()
             {
-               try
-               {
-                  toPdfX();
-               }
-               catch (IOException e)
-               {
-                  error(getMessageWithFallback("error.conversion_failed",
-                     "Conversion failed\n{0}", e.getMessage()), e);
-               }
+               runConversion();
             }
          };
 
@@ -450,6 +467,8 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       {
          helpLib.error(e);
       }
+
+      appSelector = new JpdfxAppSelector(this);
 
       JComponent mainComp = Box.createVerticalBox();
       mainFrame.getContentPane().add(new JScrollPane(mainComp), "Center");
@@ -523,6 +542,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       row.add(titleLabel);
       row.add(titleField);
 
+      if (pdfTitle != null)
+      {
+         titleField.setText(pdfTitle);
+      }
+
       clampCompMaxHeight(row, 0, 0);
 
       row = createRow();
@@ -532,6 +556,11 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
       JLabel authorLabel = helpLib.createJLabel(labelGrp, "pdfinfo.pdfauthor", authorField);
       row.add(authorLabel);
       row.add(authorField);
+
+      if (pdfAuthor != null)
+      {
+         authorField.setText(pdfAuthor);
+      }
 
       clampCompMaxHeight(row, 0, 0);
 
@@ -866,6 +895,24 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    {
       setInputFile(null);
       setOutputFile(null);
+
+      if (pdfTitle == null)
+      {
+         titleField.setText("");
+      }
+      else
+      {
+         titleField.setText(pdfTitle);
+      }
+
+      if (pdfAuthor == null)
+      {
+         authorField.setText("");
+      }
+      else
+      {
+         authorField.setText(pdfAuthor);
+      }
    }
 
    public void selectInputFile()
@@ -896,6 +943,20 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
          properties.addRecentFile(file);
          properties.setRecentFiles(recentM, this);
+
+         try
+         {
+            getPdfInfo(inFile);
+         }
+         catch (Exception e)
+         {
+            error(mainFrame,
+              getMessageWithFallback("error.noinfo",
+               "Failed to get PDF information from file ''{0}''.\n{1}",
+                inFile, e.getMessage()
+              ),
+              e);
+         }
       }
 
       convertAction.setEnabled(inFile != null && outFile != null);
@@ -971,6 +1032,283 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
    public boolean supportsOutput(File file)
    {
       return pdfFilter.accept(file);
+   }
+
+   /**
+    * Gets author, title and page count from a PDF file.
+    * The information is put in the applicable JTextField components.
+    * @param pdfFile the PDF file
+    */
+   public void getPdfInfo(File pdfFile) throws IOException,InterruptedException
+   {
+      if (!pdfFile.exists())
+      {
+         throw new FileNotFoundException(getMessageWithFallback(
+           "error.file_not_found", "File not found: {0}", pdfFile));
+      }
+
+      setStatus(getMessageWithFallback("message.getinfo", "Getting PDF info."));
+
+      String gs = getGSApp();
+
+      File file = pdfFile;
+
+      if (!file.isAbsolute())
+      {
+         file = pdfFile.getAbsoluteFile();
+      }
+
+      String filename = toGSFileName(file);
+
+      String dirname = file.getParentFile().getAbsolutePath();
+
+      if (!dirname.endsWith(File.separator))
+      {
+         dirname += File.separator;
+      }
+
+      StringBuilder ps = new StringBuilder();
+
+      ps.append("/PDFContext << >> .PDFInit def (");
+      ps.append(filename);
+      ps.append(") (r) file ");
+      ps.append("PDFContext .PDFStream ");
+      ps.append("PDFContext .PDFInfo dup /Title known { /Title get = } { () = } ifelse ");
+      ps.append("PDFContext .PDFInfo dup /Author known { /Author get = } { () = } ifelse ");
+      ps.append("PDFContext .PDFInfo dup /NumPages known { /NumPages get = } { () = } ifelse ");
+      ps.append("PDFContext .PDFClose quit");
+
+      String[] cmd = new String[]
+      {
+         gs,
+         "-dNODISPLAY",
+         "--permit-file-read="+dirname,
+         "-q",
+         "-c",
+         ps.toString()
+      };
+
+      StringBuilder result = new StringBuilder();
+
+      int exitCode = getHelpLib().execCommandAndWaitFor(
+        (File)null, (File)null, true,
+        TeXJavaHelpLib.MessageType.WARNING,
+        result,
+        properties.getMaxProcessTime(),
+        Integer.MAX_VALUE,
+        this,
+        cmd);
+
+      sizeField.setText(formatFileSize(pdfFile.length()));
+
+      if (exitCode == 0)
+      {
+         String[] split = result.toString().split("\\r?\\n");
+
+         String name = "";
+         String title = "";
+         String pages = "";
+
+         if (split.length > 0)
+         {
+            byte[] bytes = split[0].getBytes();
+
+            if (bytes.length > 1
+                  && bytes[0] == 0x3F && bytes[1] == 0x3F)
+            {
+               title = new String(bytes, 2, bytes.length-2, StandardCharsets.UTF_16);
+            }
+            else
+            {
+               title = split[0];
+            }
+
+            if (split.length > 1)
+            {
+               bytes = split[1].getBytes();
+
+               if (bytes.length > 1
+                     && bytes[0] == 0x3F && bytes[1] == 0x3F)
+               {
+                  name = new String(bytes, 2, bytes.length-2, StandardCharsets.UTF_16);
+               }
+               else
+               {
+                  name = split[1];
+               }
+
+               if (split.length > 2)
+               {
+                  bytes = split[2].getBytes();
+
+                  if (bytes.length > 1
+                        && bytes[0] == 0xFE && bytes[1] == 0xFF)
+                  {
+                     pages = new String(bytes, StandardCharsets.UTF_16);
+                  }
+                  else
+                  {
+                     pages = split[2];
+                  }
+               }
+            }
+         }
+
+         boolean updateInfo = 
+                  (pdfAuthor == null || name.equals(pdfAuthor))
+               && (pdfTitle == null || title.equals(pdfTitle));
+
+         if (!updateInfo && (
+                  JOptionPane.showConfirmDialog(mainFrame,
+                    getMessageWithFallback(
+                      "message.confirm.update_info",
+                      "Update PDF Info?"
+                    ),
+                    getMessageWithFallback("message.confirm", "Confirm"),
+                    JOptionPane.YES_NO_OPTION,
+                   JOptionPane.QUESTION_MESSAGE
+                  )
+                == JOptionPane.YES_OPTION
+               )
+            )
+         {
+            updateInfo = true;
+         }
+
+         if (updateInfo)
+         {
+            authorField.setText(name);
+            titleField.setText(title);
+         }
+
+         pageCountField.setText(pages);
+      }
+   }
+
+   /**
+    * Converts the filename to a form that GhostScript will accept.
+    * @param filename OS filename
+    * @return PostScript string
+    */
+   public static String toGSFileName(String filename)
+   {
+      int n = filename.length();
+   
+      StringBuilder builder = new StringBuilder(n);
+         
+      boolean swapdd = File.separator.equals("\\");
+            
+      for (int i = 0; i < n; i++)
+      {
+         int codePoint = filename.codePointAt(i);
+    
+         if (codePoint == 40 || codePoint == 41)
+         {
+            // Replace left or right parenthesis with backslash
+            // followed by parenthesis
+               
+            builder.appendCodePoint(92); // backslash
+            builder.appendCodePoint(codePoint);
+         }     
+         else if (swapdd && codePoint == 92)
+         {
+            // Replace backslash \ with forward slash /
+
+            builder.appendCodePoint(47);
+         }
+         else
+         {
+            builder.appendCodePoint(codePoint);
+         }
+      }
+
+      return builder.toString();
+   }
+
+   public File getApp(String appName, String winAppName, String os2AppName)
+      throws FileNotFoundException
+   {        
+      File path = null;
+
+      if (appSelector != null)
+      {
+         path = appSelector.fetchApplicationPath(
+            appName, winAppName, os2AppName,
+            getMessageWithFallback(
+             "properties.query.location.app",
+             "Please specify location of {0} application",
+             appName));
+      }
+
+      if (path == null || !path.exists())
+      {
+         throw new FileNotFoundException(getMessageWithFallback(
+          "error.process_failed.missing_app",
+          "Process can''t run without {0} application. Please provide full path.", appName));
+      }  
+    
+      return path;
+   }
+
+   public String getGSApp()
+    throws IOException
+   {
+      String app = properties.getGSApp();
+
+      if (app != null && !app.isEmpty())
+      {
+         return app;
+      }
+
+      File path = null;
+
+      path = getApp("gs", "gswin64c", "gsos2");
+
+      properties.setGSApp(path.getAbsolutePath());
+
+      return path.getAbsolutePath();
+   }
+
+   @Override
+   public void setProcess(Process process)
+   {
+   }
+
+   @Override
+   public void checkForInterrupt() throws UserCancelledException
+   {
+// TODO
+   }
+
+   /**
+    * Converts the filename to a form that GhostScript will accept.
+    * @param file the file
+    * @return PostScript string
+    */
+   public static String toGSFileName(File file)
+   {
+      return toGSFileName(file.getAbsolutePath());
+   }
+
+   /**
+    * Formats byte size.
+    */
+   public static String formatFileSize(long size)
+   {
+      int grp = (int) (Math.log10(size)/Math.log10(1024));
+
+      return String.format("%d %s",
+         (int)Math.round(size/Math.pow(1024, grp)), FILE_SIZE_UNITS[grp]);
+   }
+
+   public void runConversion()
+   {
+// TODO start thread
+   }
+
+   public void toPdfX() throws IOException
+   {
+// TODO
    }
 
    public static void main(String[] args)
@@ -1052,6 +1390,7 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
    boolean guiMode = true;
    File inFile, outFile;
+   String pdfAuthor, pdfTitle;
 
    JFrame mainFrame;
    JToolBar toolbar;
@@ -1068,10 +1407,14 @@ public class Jmakepdfx extends AbstractCLI implements ActionListener
 
    JpdfxProperties properties;
    PropertiesDialog propertiesDialog;
+   JpdfxAppSelector appSelector;
 
    public static final int FILE_FIELD_SIZE=32;
    public static final int FILE_ROW_HGAP=5;
    public static final int FILE_ROW_VGAP=10;
+
+   public static final String[] FILE_SIZE_UNITS
+      = new String[] {"B", "KB", "MB", "GB", "TB"};
 
    public static final String ICON_DIR = "icons/";
    public static final String NAME = "jmakepdfx";

@@ -14,6 +14,8 @@ Nicola Talbot
 <entry key="syntax.out">{0} (or {1})	Output PDF file (required for batch mode).</entry>
 <entry key="syntax.gui">{0} (or {1})	Run in GUI mode (default).</entry>
 <entry key="syntax.batch">{0} (or {1})	Run in batch mode.</entry>
+<entry key="syntax.title">{0} (or {1})	The PDF title.</entry>
+<entry key="syntax.author">{0} (or {1})	The PDF author.</entry>
 
 
 <!-- Menus -->
@@ -113,6 +115,17 @@ Nicola Talbot
 
 <entry key="filter.pdf">PDF Document</entry>
 
+<!-- Application selector -->
+
+<entry key="appselect.title">Select Application</entry>
+<entry key="appselect.pathlabel">Select path to application</entry>
+<entry key="appselect.pathlabel.mnemonic">P</entry>
+
+<!-- ICC file selector -->
+
+<entry key="iccselect.title">Select ICC File</entry>
+
+
 <!-- Properties Dialog -->
 
 <entry key="properties.title">Properties</entry>
@@ -167,6 +180,7 @@ Overwrite?</entry>
 <entry key="message.done">Done</entry>
 <entry key="message.getinfo">Getting PDF info.</entry>
 <entry key="message.failedinfo">Something was wrong with your PDF file.</entry>
+<entry key="message.confirm.update_info">Update PDF Info?</entry>
 <entry key="message.confirm.abort">Are you sure you want to abort this process?</entry>
 <entry key="message.confirm.quit">There seems to still be a process running.
 Are you sure you want to quit?
@@ -194,9 +208,11 @@ Click ''{1}'' to cancel quit request.</entry>
 <entry key="error.cant_move">Can''t move file to ''{0}'', file already exists</entry>
 <entry key="error.cant_mkdir">Can''t create directory: {0}</entry>
 
-<entry key="error.no_gs">This application needs GhostScript. Please use the {0} dialog to specify the path to the GhostScript executable.</entry>
+<entry key="error.process_failed.missing_app">Process can''t run without {0} application.
+Please provide full path.</entry>
 <entry key="error.no_icc">Can''t proceed without an ICC file. Please use the {0} dialog to specify the path to an ICC file.</entry>
 <entry key="error.no_outputfile">No output file specified.</entry>
+<entry key="error.no_file">No file specified.</entry>
 <entry key="error.output_is_dir">Output file must be a regular file. ''{0}'' is a directory.</entry>
 <entry key="error.noinfo">Failed to get PDF information from file ''{0}''.
 {1}</entry>
