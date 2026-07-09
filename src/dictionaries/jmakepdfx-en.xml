@@ -57,6 +57,7 @@ Nicola Talbot
 <entry key="menu.tools.convert">Convert</entry>
 <entry key="menu.tools.convert.mnemonic">C</entry>
 <entry key="menu.tools.convert.tooltip">Convert selected input file</entry>
+<entry key="menu.tools.convert.iconimage">next</entry>
 
 <entry key="menu.tools.abort">Abort</entry>
 <entry key="menu.tools.abort.mnemonic">A</entry>
@@ -74,6 +75,7 @@ Nicola Talbot
 
 <entry key="menu.help.about">About</entry>
 <entry key="menu.help.about.mnemonic">A</entry>
+<entry key="menu.help.about.iconimage">information</entry>
 
 <entry key="menu.help.license">License</entry>
 <entry key="menu.help.license.mnemonic">L</entry>
@@ -110,6 +112,9 @@ Nicola Talbot
 <entry key="profile.cmyk.mnemonic">K</entry>
 <entry key="profile.use_icc">Use ICC</entry>
 <entry key="profile.use_icc.mnemonic">C</entry>
+
+<entry key="button.auto_open">Automatically open PDF on completion</entry>
+<entry key="button.auto_open.mnemonic">P</entry>
 
 <!-- File Filter -->
 
@@ -182,14 +187,7 @@ Overwrite?</entry>
 <entry key="message.failedinfo">Something was wrong with your PDF file.</entry>
 <entry key="message.confirm.update_info">Update PDF Info?</entry>
 <entry key="message.confirm.abort">Are you sure you want to abort this process?</entry>
-<entry key="message.confirm.quit">There seems to still be a process running.
-Are you sure you want to quit?
-Click ''{0}'' to abort process and quit application.
-Click ''{1}'' to cancel quit request.</entry>
-<entry key="message.confirm.yes">Yes</entry>
-<entry key="message.confirm.yes.mnemonic">Y</entry>
-<entry key="message.confirm.no">No</entry>
-<entry key="message.confirm.no.mnemonic">N</entry>
+<entry key="message.confirm.quit_process">Process still running. Are you sure you want to quit?</entry>
 
 <!-- Error Messages -->
 <entry key="error.batch_requires_in">Batch mode requires input file</entry>
@@ -210,15 +208,14 @@ Click ''{1}'' to cancel quit request.</entry>
 
 <entry key="error.process_failed.missing_app">Process can''t run without {0} application.
 Please provide full path.</entry>
-<entry key="error.no_icc">Can''t proceed without an ICC file. Please use the {0} dialog to specify the path to an ICC file.</entry>
+<entry key="error.no_icc">Can''t proceed without an ICC file. Please specify the path to an ICC file or switch off ICC option.</entry>
 <entry key="error.no_outputfile">No output file specified.</entry>
 <entry key="error.no_file">No file specified.</entry>
 <entry key="error.output_is_dir">Output file must be a regular file. ''{0}'' is a directory.</entry>
 <entry key="error.noinfo">Failed to get PDF information from file ''{0}''.
 {1}</entry>
 <entry key="error.gsmess">GhostScript reported: {0}</entry>
-<entry key="error.conversion_failed">Conversion failed
-{0}</entry>
+<entry key="error.conversion_failed">Conversion failed</entry>
 
 <entry key="error.properties.missing_custom_dir">Custom setting requires a directory name</entry>
 

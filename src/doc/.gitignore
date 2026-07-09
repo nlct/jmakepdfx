@@ -1,5 +1,5 @@
 jmakepdfx-dict.bib
-jmakepdfx.pdf
+jmakepdfx*.pdf
 *.glstex
 *.aux
 *.glg

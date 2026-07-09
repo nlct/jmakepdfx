@@ -19,18 +19,22 @@
 
 package com.dickimawbooks.jmakepdfx;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import java.util.List;
 import java.util.Vector;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.FlowLayout;
@@ -151,6 +155,8 @@ public class Jmakepdfx extends AbstractCLI
 
       printSyntaxItem(getMessage("syntax.title", "--title", "-t"));
       printSyntaxItem(getMessage("syntax.author", "--author", "-a"));
+      printSyntaxItem(getMessage("syntax.author", "--icc-file", "-c"));
+      printSyntaxItem(getMessage("syntax.author", "--[no]icc"));// TODO
 
       System.out.println();
 
@@ -169,6 +175,8 @@ public class Jmakepdfx extends AbstractCLI
        || arg.equals("--output") || arg.equals("-o")
        || arg.equals("--title") || arg.equals("-t")
        || arg.equals("--author") || arg.equals("-a")
+       || arg.equals("--icc-file") || arg.equals("-c")
+       || arg.equals("--timeout")
          )
       {
          return 1;
@@ -206,6 +214,14 @@ public class Jmakepdfx extends AbstractCLI
       else if (arg.equals("--nogui") || arg.equals("--batch") || arg.equals("-b"))
       {
          guiMode = false;
+      }
+      else if (arg.equals("rm-tmp"))
+      {
+         deleteTmp = true;
+      }
+      else if (arg.equals("norm-tmp"))
+      {
+         deleteTmp = false;
       }
       else if (isArg(arg, "--in", "-i", returnVals))
       {
@@ -258,6 +274,26 @@ public class Jmakepdfx extends AbstractCLI
          }
 
          pdfAuthor = returnVals[0].toString();
+      }
+      else if (isArg(arg, "--icc-file", "-c", returnVals))
+      {
+         if (returnVals[0] == null)
+         {
+            throw new InvalidSyntaxException(
+               getMessage("error.clisyntax.missing_value", arg));
+         }
+
+         iccFileName = returnVals[0].toString();
+      }
+      else if (isLongArg(arg, "--timeout", returnVals))
+      {
+         if (returnVals[0] == null)
+         {
+            throw new InvalidSyntaxException(
+               getMessage("error.clisyntax.missing_value", arg));
+         }
+
+         maxProcessTime = returnVals[0].numberValue();
       }
       else
       {
@@ -361,7 +397,7 @@ public class Jmakepdfx extends AbstractCLI
 
       properties.setRecentFiles(recentM, this);
 
-      TJHAbstractAction inputAction = new TJHAbstractAction(helpLib,
+      inputAction = new TJHAbstractAction(helpLib,
         "menu.file", "input", helpLib.getKeyStroke("menu.file.input"),
         helpLib.getDefaultButtonActionOmitKeys())
          {
@@ -375,7 +411,7 @@ public class Jmakepdfx extends AbstractCLI
       fileM.add(inputAction);
       toolbar.add(inputAction);
 
-      TJHAbstractAction outputAction = new TJHAbstractAction(helpLib,
+      outputAction = new TJHAbstractAction(helpLib,
         "menu.file", "output", helpLib.getKeyStroke("menu.file.output"),
         helpLib.getDefaultButtonActionOmitKeys())
          {
@@ -389,8 +425,10 @@ public class Jmakepdfx extends AbstractCLI
       fileM.add(outputAction);
       toolbar.add(outputAction);
 
-      fileM.add(helpLib.createJMenuItem("menu.file", "reset", this,
-        helpLib.getKeyStroke("menu.file.reset")));
+      resetItem = helpLib.createJMenuItem("menu.file", "reset", this,
+        helpLib.getKeyStroke("menu.file.reset"));
+
+      fileM.add(resetItem);
 
       fileM.add(helpLib.createJMenuItem("menu.file", "quit", this,
         helpLib.getKeyStroke("menu.file.quit")));
@@ -409,16 +447,32 @@ public class Jmakepdfx extends AbstractCLI
             }
          };
 
-       convertAction.setEnabled(false);
+      convertAction.setEnabled(false);
 
-       toolsM.add(convertAction);
+      toolsM.add(convertAction);
+
+      abortAction = new TJHAbstractAction(helpLib,
+        "menu.tools", "abort", helpLib.getKeyStroke("menu.tools.abort"),
+        helpLib.getDefaultButtonActionOmitKeys())
+         {
+            @Override
+            public void doAction()
+            {
+               abortRequested = true;
+            }
+         };
+
+      abortAction.setEnabled(false);
+
+      toolsM.add(abortAction);
+      toolbar.add(abortAction);
 
       JMenu settingsM = helpLib.createJMenu("menu.settings");
       mBar.add(settingsM);
 
       propertiesDialog = new PropertiesDialog(this);
 
-      TJHAbstractAction settingsAction = new TJHAbstractAction(helpLib,
+      settingsAction = new TJHAbstractAction(helpLib,
         "menu.settings", "editsettings", helpLib.getKeyStroke("menu.settings.editsettings"),
         helpLib.getDefaultButtonActionOmitKeys())
          {
@@ -469,6 +523,7 @@ public class Jmakepdfx extends AbstractCLI
       }
 
       appSelector = new JpdfxAppSelector(this);
+      iccSelector = new IccSelector(this);
 
       JComponent mainComp = Box.createVerticalBox();
       mainFrame.getContentPane().add(new JScrollPane(mainComp), "Center");
@@ -605,6 +660,10 @@ public class Jmakepdfx extends AbstractCLI
       row.add(iccButton);
 
       row.add(new JButton(convertAction));
+
+      autoOpenButton = helpLib.createJCheckBox("button", "auto_open", true);
+
+      mainComp.add(autoOpenButton);
 
       if (inFile != null)
       {
@@ -856,9 +915,42 @@ public class Jmakepdfx extends AbstractCLI
       return iccButton == null ? properties.isUseICC() : iccButton.isSelected();
    }
 
+   public String getICCFileName()
+   {
+      return iccFileName == null ? properties.getICCFileName() : iccFileName;
+   }
+
+   public long getMaxProcessTime()
+   {
+      return maxProcessTime == null ? properties.getMaxProcessTime() :
+        maxProcessTime.longValue();
+   }
+
+   public void setMaxProcessTime(long millisec)
+   {
+      properties.setMaxProcessTime(millisec);
+      maxProcessTime = Long.valueOf(millisec);
+   }
+
    public void quit()
    {
-// TODO check if process running
+      if (convertWorker != null &&
+           (
+               JOptionPane.showConfirmDialog(mainFrame,
+                    getMessageWithFallback(
+                      "message.confirm.quit_process",
+                      "Process still running. Are you sure you want to quit?"
+                    ),
+                    getMessageWithFallback("message.confirm", "Confirm"),
+                    JOptionPane.YES_NO_OPTION,
+                   JOptionPane.QUESTION_MESSAGE
+                  )
+                != JOptionPane.YES_OPTION
+           )
+         )
+      {
+         return;
+      }
 
       try
       {
@@ -1277,7 +1369,80 @@ public class Jmakepdfx extends AbstractCLI
    @Override
    public void checkForInterrupt() throws UserCancelledException
    {
-// TODO
+      if (abortRequested)
+      {
+         throw new UserCancelledException(getHelpLib());
+      }
+   }
+
+   public boolean isAutoViewOn()
+   {
+      return autoOpenButton == null ? false : autoOpenButton.isSelected();
+   }
+
+   public void viewPDF(File pdfFile)
+   {
+      String viewer = properties.getPDFViewer();
+
+      if (viewer == null || viewer.isEmpty())
+      {
+         if (Desktop.isDesktopSupported())
+         {
+            try
+            {
+               Desktop desktop = Desktop.getDesktop();
+
+               if (desktop.isSupported(Desktop.Action.OPEN))
+               {
+                  desktop.open(pdfFile);
+                  return;
+               }
+            }
+            catch (Exception e)
+            {
+               debug("Can't open file", e);
+            }
+         }
+
+         try
+         {
+            viewer = System.getenv("PDFVIEWER");
+         }
+         catch (Exception e)
+         {
+            debug("Can't query environment variable PDFVIEWER", e);
+         }
+
+         if (viewer == null || viewer.isEmpty())
+         {
+            try
+            {
+               File viewerApp = getApp("evince", "acroread", "foxit");
+
+               if (viewerApp != null)
+               {
+                  viewer = viewerApp.getAbsolutePath();
+                  properties.setPDFViewer(viewer);
+               }
+            }
+            catch (FileNotFoundException e)
+            {
+               error(mainFrame, e.getMessage(), e);
+            }
+         }
+      }
+
+      if (viewer != null && !viewer.isEmpty())
+      {
+         try
+         {
+            getHelpLib().execCommandAndWaitFor(viewer, pdfFile.getAbsolutePath());
+         }
+         catch (Exception e)
+         {
+            error(mainFrame, e.getMessage(), e);
+         }
+      }
    }
 
    /**
@@ -1303,12 +1468,328 @@ public class Jmakepdfx extends AbstractCLI
 
    public void runConversion()
    {
-// TODO start thread
+      disableTools();
+      abortRequested = false;
+      abortAction.setEnabled(true);
+      convertWorker = new ConvertWorker(this);
+      convertWorker.execute();
    }
 
-   public void toPdfX() throws IOException
+   public void workerFinished()
    {
-// TODO
+      convertWorker = null;
+      abortRequested = false;
+      abortAction.setEnabled(false);
+      enableTools();
+   }
+
+   public void disableTools()
+   {
+      inputAction.setEnabled(false);
+      inputField.setEnabled(false);
+      outputAction.setEnabled(false);
+      outputField.setEnabled(false);
+      convertAction.setEnabled(false);
+      settingsAction.setEnabled(false);
+      resetItem.setEnabled(false);
+      cmykButton.setEnabled(false);
+      iccButton.setEnabled(false);
+      titleField.setEnabled(false);
+      authorField.setEnabled(false);
+   }
+
+   public void enableTools()
+   {
+      inputAction.setEnabled(true);
+      inputField.setEnabled(true);
+      outputAction.setEnabled(true);
+      outputField.setEnabled(true);
+      convertAction.setEnabled(inFile != null && outFile != null);
+      settingsAction.setEnabled(true);
+      resetItem.setEnabled(true);
+      cmykButton.setEnabled(true);
+      iccButton.setEnabled(true);
+      titleField.setEnabled(true);
+      authorField.setEnabled(true);
+   }
+
+   public File toPdfX() throws IOException,UserCancelledException,InterruptedException
+   {
+      String iccFileName = null;
+      String iccName = null;
+
+      boolean useIcc = isUseICC();
+
+      if (useIcc)
+      {
+         String icc = getICCFileName();
+            
+         File iccFile = null;
+
+         if (icc == null || icc.equals(""))
+         {
+            if (iccSelector != null)
+            {
+               iccFile = iccSelector.fetchPath();
+            }
+
+            if (iccFile == null)
+            {
+               // user cancelled or no GUI
+      
+               throw new FileNotFoundException(
+                  getMessageWithFallback("error.no_icc", "Can''t proceed without an ICC file. Please specify the path to an ICC file or switch off ICC option.")
+               );
+            }
+         }
+         else
+         {
+            iccFile = new File(icc);
+         }
+
+         iccFileName = toGSFileName(iccFile);
+
+         iccName = iccFile.getName().replaceAll("([\\(\\)])", "\\\\1");
+
+         int idx = iccName.toLowerCase().lastIndexOf(".icc");
+
+         if (idx > 0)
+         {
+            iccName = iccName.substring(0, idx);
+         }
+      }
+
+      String gsApp = getGSApp();
+
+      if (outFile == null)
+      {
+         throw new FileNotFoundException(getMessageWithFallback(
+            "error.no_outputfile",
+             "No output file specified."
+         ));
+      }
+
+      if (outFile.isDirectory())
+      {
+         throw new IOException(getMessageWithFallback("error.output_is_dir",
+           "Output file must be a regular file. ''{0}'' is a directory.",
+           outFile));
+      }
+
+      if (outFile.getCanonicalPath().equals(inFile.getCanonicalPath()))
+      {
+         throw new IOException(getMessageWithFallback("error.io.outin",
+           "Output file must not be the same as the input file."));
+      }
+
+      if (isGUIMode() && outFile.exists())
+      {
+         if (JOptionPane.showConfirmDialog(mainFrame,
+             getMessageWithFallback("message.confirm.overwrite",
+               "File ''{0}'' already exists.\nOverwrite?",
+               outFile.getAbsolutePath()),
+             getMessageWithFallback("message.confirm", "Confirm"),
+             JOptionPane.YES_NO_OPTION)
+           != JOptionPane.YES_OPTION)
+         {
+            setStatus(getMessageWithFallback("message.failed", "Process Failed"));
+            return null;
+         }
+      }
+
+      checkForInterrupt();
+
+      // create def file
+
+      File dir = inFile.getParentFile();
+
+      if (dir == null)
+      {
+         dir = inFile.getAbsoluteFile().getParentFile();
+      }
+
+      String dirname = dir.getAbsolutePath();
+
+      if (!dirname.endsWith(File.separator))
+      {
+         dirname += File.separator;
+      }
+
+      File defFile = File.createTempFile("jmakepdfx", ".ps", dir);
+
+      if (deleteTmp)
+      {
+         defFile.deleteOnExit();
+      }
+
+      PrintWriter out = null;
+      BufferedWriter writer = null;
+
+      setStatus(getMessageWithFallback("message.writing",
+          "Writing file ''{0}''",
+           defFile.getAbsolutePath()));
+
+      try
+      {
+         writer = Files.newBufferedWriter(defFile.toPath());
+         out = new PrintWriter(writer);
+
+         out.println("systemdict /ProcessColorModel known {");
+         out.println("systemdict /ProcessColorModel get dup /DeviceGray ne exch /DeviceCMYK ne and } {");
+         out.println("  true");
+         out.println("} ifelse");
+         out.println("{ (ERROR: ProcessColorModel must be /DeviceGray or DeviceCMYK.)=");
+         out.println("  /ProcessColorModel cvx /rangecheck signalerror");
+         out.println("} if");
+
+         out.println();
+         out.println("% Define entries to the document Info dictionary :");
+         out.println();
+
+         if (useIcc)
+         {
+            out.println("/ICCProfile ("+iccFileName+") def");
+            out.println();
+         }
+
+         out.println("[ /GTS_PDFXVersion (PDF/X-3:2002)");
+
+         String title = (titleField == null ? pdfTitle : titleField.getText());
+
+         if (title == null)
+         {
+            title = "";
+         }
+         else
+         {
+            title = title.replaceAll("(\\\\)", "\\\\\\1");
+            title = title.replaceAll("([\\(\\)])", "\\\\1");
+         }
+
+         String author = (authorField == null ? pdfAuthor : authorField.getText());
+
+         if (author == null)
+         {
+            author = "";
+         }
+         else
+         {
+            author = author.replaceAll("(\\\\)", "\\\\\\1");
+            author = author.replaceAll("([\\(\\)])", "\\\\1");
+         }
+
+         String device = (isCMYKProfile() ? "CMYK" : "Gray");
+
+         out.println("  /Trapped /False");
+         out.println("  /DOCINFO pdfmark");
+
+         if (useIcc)
+         {
+            out.println();
+            out.println("% Define an ICC profile :");
+            out.println();
+
+            out.println("currentdict /ICCProfile known {");
+            out.println("  [/_objdef {icc_PDFX} /type /stream /OBJ pdfmark");
+            out.print("  [{icc_PDFX} <</N systemdict /ProcessColorModel get ");
+            out.print("/Device" + device);
+            out.println(" eq {1} {4} ifelse >> /PUT pdfmark");
+            out.println("  [{icc_PDFX} ICCProfile (r) file /PUT pdfmark");
+            out.println("} if");
+         }
+
+         out.println();
+         out.println("% Define the output intent dictionary :");
+         out.println();
+
+         out.println("[/_objdef {OutputIntent_PDFX} /type /dict /OBJ pdfmark");
+         out.println("[{OutputIntent_PDFX} <<");
+         out.println("  /Type /OutputIntent");
+         out.println("  /S /GTS_PDFX");
+         out.println("  /OutputCondition (Commercial and speciality printing)");
+
+         if (useIcc)
+         {
+            out.println("  /OutputConditionIdentifier ("+iccName+")");
+            out.println("  /RegistryName (http://www.color.org)");
+            out.println("  currentdict /ICCProfile known {");
+            out.println("    /DestOutputProfile {icc_PDFX}");
+            out.println("  } if");
+         }
+
+         out.println(">> /PUT pdfmark");
+         out.println("[{Catalog} <</OutputIntents [ {OutputIntent_PDFX} ]>> /PUT pdfmark");
+
+         // convert file names into platform independent paths that
+         // ghostscript will be happy with
+
+         String defFileName = toGSFileName(defFile);
+         String fileName = toGSFileName(inFile);
+         String outputFileName = toGSFileName(outFile);
+
+         checkForInterrupt();
+
+// Add -dCompatibilityLevel=1.3 to flatten transparency
+
+         String[] cmd = 
+            new String[]
+            {
+               gsApp,
+               "--permit-file-read="+dirname,
+               "-dPreserveAnnots=false",// annotations not permitted in PDF/X
+               "-dPDFX",
+               "-dBATCH",
+               "-dNOPAUSE",
+               "-dNOOUTERSAVE",
+               "-sDEVICE=pdfwrite",
+               "-sColorConversionStrategy="+device,
+               "-dProcessColorModel=/Device"+device,
+               "-dPDFSETTINGS=/prepress",
+               "-sOutputFile="+outputFileName+"",
+               defFileName,
+               "-c",
+               "("+fileName+") run " 
+                 +"/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse "
+                 +"[/Title ("+title+") /Author ("+author+") /DOCINFO pdfmark"
+            };
+
+         checkForInterrupt();
+
+         StringBuilder result = new StringBuilder();
+
+         int exitCode = getHelpLib().execCommandAndWaitFor(
+           (File)null, (File)null, true,
+           TeXJavaHelpLib.MessageType.WARNING,
+           result,
+           properties.getMaxProcessTime(),
+           Integer.MAX_VALUE,
+           this,
+           cmd
+         );
+
+         if (exitCode == 0)
+         {
+            setStatus(getMessageWithFallback("message.completed", "Completed"));
+         }
+         else
+         {
+            setStatus(getMessageWithFallback("message.conversion_failed", "Conversion failed"));
+         }
+      }
+      finally
+      {
+         if (writer != null)
+         {
+            writer.close();
+         }
+
+         if (out != null)
+         {
+            out.close();
+         }
+      }
+
+      return outFile.exists() ? outFile : null;
    }
 
    public static void main(String[] args)
@@ -1391,6 +1872,9 @@ public class Jmakepdfx extends AbstractCLI
    boolean guiMode = true;
    File inFile, outFile;
    String pdfAuthor, pdfTitle;
+   String iccFileName;
+   boolean deleteTmp = true;
+   Number maxProcessTime;
 
    JFrame mainFrame;
    JToolBar toolbar;
@@ -1399,8 +1883,11 @@ public class Jmakepdfx extends AbstractCLI
    JFileChooser fileChooser;
    JTextField titleField, authorField, pageCountField, sizeField;
    JRadioButton greyButton, cmykButton;
-   JCheckBox iccButton;
-   TJHAbstractAction convertAction;
+   JCheckBox iccButton, autoOpenButton;
+   TJHAbstractAction inputAction, outputAction, settingsAction;
+   TJHAbstractAction convertAction, abortAction;
+   boolean abortRequested = false;
+   JMenuItem resetItem;
    JLabel statusField;
    MessageDialog licenseDialog, aboutDialog;
    javax.swing.filechooser.FileFilter pdfFilter;
@@ -1408,6 +1895,8 @@ public class Jmakepdfx extends AbstractCLI
    JpdfxProperties properties;
    PropertiesDialog propertiesDialog;
    JpdfxAppSelector appSelector;
+   IccSelector iccSelector;
+   ConvertWorker convertWorker = null;
 
    public static final int FILE_FIELD_SIZE=32;
    public static final int FILE_ROW_HGAP=5;

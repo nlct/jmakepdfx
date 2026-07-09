@@ -167,7 +167,7 @@ public class PropertiesDialog extends JDialog
       row = createRow();
       mainPanel.add(row);
 
-      long millisec = properties.getMaxProcessTime();
+      long millisec = application.getMaxProcessTime();
 
       timeoutSpinnerModel = new SpinnerNumberModel(
          Integer.valueOf((int)(millisec/60000L)),
@@ -320,7 +320,7 @@ public class PropertiesDialog extends JDialog
       properties.setICCFileName(iccField.getFileName());
 
       long minutes = timeoutSpinnerModel.getNumber().longValue();
-      properties.setMaxProcessTime(minutes * 60000L);
+      application.setMaxProcessTime(minutes * 60000L);
 
       setVisible(false);
    }
