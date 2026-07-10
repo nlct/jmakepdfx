@@ -1,5 +1,11 @@
+v0.5
 
-Moved from local subversion repository to GitHub
+  * Moved from local subversion repository to GitHub
+
+  * Rewritten to use the TeX Java Help Library (replacing
+    JavaHelp and the Java Look and Feel Graphics Repository).
+
+  * Updated to take into account GhostScript changes.
 
 v0.4.1b:
 

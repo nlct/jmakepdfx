@@ -155,8 +155,14 @@ public class Jmakepdfx extends AbstractCLI
 
       printSyntaxItem(getMessage("syntax.title", "--title", "-t"));
       printSyntaxItem(getMessage("syntax.author", "--author", "-a"));
-      printSyntaxItem(getMessage("syntax.author", "--icc-file", "-c"));
-      printSyntaxItem(getMessage("syntax.author", "--[no]icc"));// TODO
+      printSyntaxItem(getMessage("syntax.icc-file", "--icc-file", "-c"));
+      printSyntaxItem(getMessage("syntax.icc", "--[no]icc", "--icc-file"));
+
+      printSyntaxItem(getMessage("syntax.gray", "--gray", "-G"));
+      printSyntaxItem(getMessage("syntax.cmyk", "--cmyk", "-C"));
+
+      printSyntaxItem(getMessage("syntax.rm-tmp", "--[no]rm-tmp"));
+      printSyntaxItem(getMessage("syntax.timeout", "--timeout"));
 
       System.out.println();
 
@@ -219,9 +225,17 @@ public class Jmakepdfx extends AbstractCLI
       {
          deleteTmp = true;
       }
-      else if (arg.equals("norm-tmp"))
+      else if (arg.equals("norm-tmp") || arg.equals("no-rm-tmp"))
       {
          deleteTmp = false;
+      }
+      else if (arg.equals("--gray") || arg.equals("-G"))
+      {
+         profileType = ProfileType.GRAY;
+      }
+      else if (arg.equals("--cmyk") || arg.equals("-C"))
+      {
+         profileType = ProfileType.CMYK;
       }
       else if (isArg(arg, "--in", "-i", returnVals))
       {
@@ -648,7 +662,10 @@ public class Jmakepdfx extends AbstractCLI
       ButtonGroup btnGrp = new ButtonGroup();
 
       greyButton = helpLib.createJRadioButton("profile", "greyscale",
-         properties.isGrayProfile(), btnGrp);
+         (profileType != null && profileType == ProfileType.GRAY)
+          || (profileType == null && properties.isGrayProfile()),
+         btnGrp);
+
       row.add(greyButton);
 
       cmykButton = helpLib.createJRadioButton("profile", "cmyk",
@@ -863,9 +880,19 @@ public class Jmakepdfx extends AbstractCLI
 
    public void setStatus(String msg)
    {
+      setStatus(msg, false);
+   }
+
+   public void setStatus(String msg, boolean publishMsg)
+   {
       if (statusField != null)
       {
          statusField.setText(msg);
+      }
+
+      if (publishMsg)
+      {
+         publishMessage(msg);
       }
    }
 
@@ -902,12 +929,36 @@ public class Jmakepdfx extends AbstractCLI
 
    public boolean isGrayProfile()
    {
-      return greyButton == null ? properties.isGrayProfile() : greyButton.isSelected();
+      if (greyButton == null)
+      {
+         if (profileType != null)
+         {
+            return profileType == ProfileType.GRAY;
+         }
+         else
+         {
+            return properties.isGrayProfile();
+         }
+      }
+
+      return greyButton.isSelected();
    }
 
    public boolean isCMYKProfile()
    {
-      return cmykButton == null ? properties.isCMYKProfile() : cmykButton.isSelected();
+      if (cmykButton == null)
+      {
+         if (profileType != null)
+         {
+            return profileType == ProfileType.CMYK;
+         }
+         else
+         {
+            return properties.isCMYKProfile();
+         }
+      }
+
+      return cmykButton.isSelected();
    }
 
    public boolean isUseICC()
@@ -1139,6 +1190,9 @@ public class Jmakepdfx extends AbstractCLI
            "error.file_not_found", "File not found: {0}", pdfFile));
       }
 
+      publishMessage(getMessageWithFallback("message.reading", "Reading file ''{0}''",
+        pdfFile));
+
       setStatus(getMessageWithFallback("message.getinfo", "Getting PDF info."));
 
       String gs = getGSApp();
@@ -1191,7 +1245,12 @@ public class Jmakepdfx extends AbstractCLI
         this,
         cmd);
 
-      sizeField.setText(formatFileSize(pdfFile.length()));
+      String fileSize = formatFileSize(pdfFile.length());
+
+      if (sizeField != null)
+      {
+         sizeField.setText(fileSize);
+      }
 
       if (exitCode == 0)
       {
@@ -1246,34 +1305,53 @@ public class Jmakepdfx extends AbstractCLI
             }
          }
 
-         boolean updateInfo = 
-                  (pdfAuthor == null || name.equals(pdfAuthor))
-               && (pdfTitle == null || title.equals(pdfTitle));
+         if (isGUIMode())
+         {
+            boolean updateInfo = 
+                     (pdfAuthor == null || name.equals(pdfAuthor))
+                  && (pdfTitle == null || title.equals(pdfTitle));
 
-         if (!updateInfo && (
-                  JOptionPane.showConfirmDialog(mainFrame,
-                    getMessageWithFallback(
-                      "message.confirm.update_info",
-                      "Update PDF Info?"
-                    ),
-                    getMessageWithFallback("message.confirm", "Confirm"),
-                    JOptionPane.YES_NO_OPTION,
-                   JOptionPane.QUESTION_MESSAGE
+            if (!updateInfo && (
+                     JOptionPane.showConfirmDialog(mainFrame,
+                       getMessageWithFallback(
+                         "message.confirm.update_info",
+                         "Update PDF Info?"
+                       ),
+                       getMessageWithFallback("message.confirm", "Confirm"),
+                       JOptionPane.YES_NO_OPTION,
+                      JOptionPane.QUESTION_MESSAGE
+                     )
+                   == JOptionPane.YES_OPTION
                   )
-                == JOptionPane.YES_OPTION
                )
-            )
-         {
-            updateInfo = true;
-         }
+            {
+               updateInfo = true;
+            }
 
-         if (updateInfo)
-         {
-            authorField.setText(name);
-            titleField.setText(title);
-         }
+            if (updateInfo)
+            {
+               authorField.setText(name);
+               titleField.setText(title);
+            }
 
-         pageCountField.setText(pages);
+            pageCountField.setText(pages);
+         }
+         else
+         {
+            if (pdfAuthor == null)
+            {
+               pdfAuthor = name;
+            }
+
+            if (pdfTitle == null)
+            {
+               pdfTitle = title;
+            }
+
+            publishMessage(getMessageWithFallback("message.pdfinfo",
+             "Title: {0}\nAuthor: {1}\nPage Count: {2}\nFile Size: {3}",
+             pdfTitle, pdfAuthor, pages, fileSize));
+         }
       }
    }
 
@@ -1592,7 +1670,7 @@ public class Jmakepdfx extends AbstractCLI
              JOptionPane.YES_NO_OPTION)
            != JOptionPane.YES_OPTION)
          {
-            setStatus(getMessageWithFallback("message.failed", "Process Failed"));
+            setStatus(getMessageWithFallback("message.failed", "Process Failed"), true);
             return null;
          }
       }
@@ -1627,7 +1705,7 @@ public class Jmakepdfx extends AbstractCLI
 
       setStatus(getMessageWithFallback("message.writing",
           "Writing file ''{0}''",
-           defFile.getAbsolutePath()));
+           defFile.getAbsolutePath()), true);
 
       try
       {
@@ -1757,6 +1835,10 @@ public class Jmakepdfx extends AbstractCLI
 
          StringBuilder result = new StringBuilder();
 
+         setStatus(getMessageWithFallback("message.writing",
+            "Writing file ''{0}''",
+             outFile.getAbsolutePath()), true);
+
          int exitCode = getHelpLib().execCommandAndWaitFor(
            (File)null, (File)null, true,
            TeXJavaHelpLib.MessageType.WARNING,
@@ -1769,7 +1851,7 @@ public class Jmakepdfx extends AbstractCLI
 
          if (exitCode == 0)
          {
-            setStatus(getMessageWithFallback("message.completed", "Completed"));
+            setStatus(getMessageWithFallback("message.completed", "Completed"), true);
          }
          else
          {
@@ -1790,6 +1872,16 @@ public class Jmakepdfx extends AbstractCLI
       }
 
       return outFile.exists() ? outFile : null;
+   }
+
+   public void runBatch() throws IOException,InterruptedException
+   {
+      if (pdfAuthor == null || pdfTitle == null)
+      {
+         getPdfInfo(inFile);
+      }
+
+      toPdfX();
    }
 
    public static void main(String[] args)
@@ -1821,7 +1913,7 @@ public class Jmakepdfx extends AbstractCLI
          }
          else
          {
-            jmakepdfx.toPdfX();
+            jmakepdfx.runBatch();
          }
       }
       catch (InvalidSyntaxException e)
@@ -1875,6 +1967,7 @@ public class Jmakepdfx extends AbstractCLI
    String iccFileName;
    boolean deleteTmp = true;
    Number maxProcessTime;
+   ProfileType profileType;
 
    JFrame mainFrame;
    JToolBar toolbar;

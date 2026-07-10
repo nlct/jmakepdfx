@@ -16,6 +16,13 @@ Nicola Talbot
 <entry key="syntax.batch">{0} (or {1})	Run in batch mode.</entry>
 <entry key="syntax.title">{0} (or {1})	The PDF title.</entry>
 <entry key="syntax.author">{0} (or {1})	The PDF author.</entry>
+<entry key="syntax.icc-file">{0} (or {1})	The ICC file.</entry>
+<entry key="syntax.icc">{0}	Use the ICC file (the default or as specified by {1}).</entry>
+<entry key="syntax.gray">{0} (or {1})	Use grayscale profile.</entry>
+<entry key="syntax.cmyk">{0} (or {1})	Use CMYK profile.</entry>
+
+<entry key="syntax.rm-tmp">{0}	Remove temporary file on exit (default).</entry>
+<entry key="syntax.timeout">{0} &lt;millisec&gt;	Set the maximum process time (in milliseconds).</entry>
 
 
 <!-- Menus -->
@@ -179,11 +186,16 @@ Nicola Talbot
 <entry key="message.confirm">Confirm</entry>
 <entry key="message.confirm.overwrite">File ''{0}'' already exists.
 Overwrite?</entry>
+<entry key="message.reading">Reading file ''{0}''</entry>
 <entry key="message.writing">Writing file ''{0}''</entry>
 <entry key="message.completed">Conversion completed.</entry>
 <entry key="message.failed">Conversion failed.</entry>
 <entry key="message.done">Done</entry>
 <entry key="message.getinfo">Getting PDF info.</entry>
+<entry key="message.pdfinfo">Title: {0}
+Author: {1}
+Page Count: {2}
+File Size: {3}</entry>
 <entry key="message.failedinfo">Something was wrong with your PDF file.</entry>
 <entry key="message.confirm.update_info">Update PDF Info?</entry>
 <entry key="message.confirm.abort">Are you sure you want to abort this process?</entry>
