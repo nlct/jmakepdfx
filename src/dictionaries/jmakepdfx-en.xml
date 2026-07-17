@@ -10,13 +10,13 @@ Nicola Talbot
 <!--  Syntax -->
 <entry key="syntax.title">Syntax:</entry>
 <entry key="syntax.options">{0} [&lt;option&gt;]+ [&lt;in PDF&gt;] [&lt;out PDF&gt;]</entry>
-<entry key="syntax.in">{0} (or {1})	Input PDF file (required for batch mode).</entry>
-<entry key="syntax.out">{0} (or {1})	Output PDF file (required for batch mode).</entry>
+<entry key="syntax.in">{0} (or {1}) &lt;PDF-file&gt;	Input PDF file (required for batch mode).</entry>
+<entry key="syntax.out">{0} (or {1}) &lt;PDF-file&gt;	Output PDF file (required for batch mode).</entry>
 <entry key="syntax.gui">{0} (or {1})	Run in GUI mode (default).</entry>
 <entry key="syntax.batch">{0} (or {1})	Run in batch mode.</entry>
-<entry key="syntax.title">{0} (or {1})	The PDF title.</entry>
-<entry key="syntax.author">{0} (or {1})	The PDF author.</entry>
-<entry key="syntax.icc-file">{0} (or {1})	The ICC file.</entry>
+<entry key="syntax.title">{0} (or {1}) &lt;title&gt;	The PDF title.</entry>
+<entry key="syntax.author">{0} (or {1}) &lt;author&gt;	The PDF author.</entry>
+<entry key="syntax.icc-file">{0} (or {1}) &lt;file&gt;	The ICC file.</entry>
 <entry key="syntax.icc">{0}	Use the ICC file (the default or as specified by {1}).</entry>
 <entry key="syntax.gray">{0} (or {1})	Use grayscale profile.</entry>
 <entry key="syntax.cmyk">{0} (or {1})	Use CMYK profile.</entry>

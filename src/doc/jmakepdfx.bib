@@ -1,6 +1,84 @@
 % Encoding: UTF-8
 
+% ABBREVIATIONS
+
 @abbreviation{GUI,
   short={GUI},
   long={Graphical User Interface}
 }
+
+% NAMED FILES
+
+@file{file.texjavahelplib.jar,
+ name={\filefmt{tex\-java\-help\-lib.jar}}
+}
+
+@file{file.jmakepdfx.tlu}
+@file{file.jmakepdfx.jar}
+
+% APPLICATIONS
+
+@application{app.jmakepdfx,
+ name={\appfmt{jmake\-pdfx}},
+ syntax={\oargm{option}+ \oargm{in PDF} \oargm{out PDF}}
+}
+
+@switch{switch.help,
+  parent={app.jmakepdfx},
+  name={\longargfmt{help}},
+  shortswitch={h},
+  description={Prints help and exits}
+}
+
+@switch{switch.version,
+  parent={app.jmakepdfx},
+  name={\longargfmt{version}},
+  shortswitch={v},
+  description={Prints version information and exits}
+}
+
+@switch{switch.in,
+  parent={app.jmakepdfx},
+  name={\longargfmt{in}},
+  shortswitch={i},
+  syntax={\meta{PDF-file}},
+  description={specifies the input PDF file (required for batch mode)}
+}
+
+@switch{switch.out,
+  parent={app.jmakepdfx},
+  name={\longargfmt{out}},
+  shortswitch={o},
+  syntax={\meta{PDF-file}},
+  description={specifies the output PDF file (required for batch mode)}
+}
+
+@switch{switch.title,
+  parent={app.jmakepdfx},
+  name={\longargfmt{title}},
+  shortswitch={t},
+  syntax={\meta{title}},
+  description={specifies the title for the output file metadata}
+}
+
+@switch{switch.author,
+  parent={app.jmakepdfx},
+  name={\longargfmt{author}},
+  shortswitch={a},
+  syntax={\meta{author}},
+  description={specifies the author for the output file metadata}
+}
+
+@switch{switch.debug,
+  parent={app.jmakepdfx},
+  name={\longargfmt{debug}},
+  description={switch on debug mode}
+}
+
+@switch{switch.nodebug,
+  parent={app.jmakepdfx},
+  name={\longargfmt{nodebug}},
+  description={switch off debug mode (default)}
+}
+
+

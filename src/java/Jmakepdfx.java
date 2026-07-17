@@ -1311,7 +1311,7 @@ public class Jmakepdfx extends AbstractCLI
                      (pdfAuthor == null || name.equals(pdfAuthor))
                   && (pdfTitle == null || title.equals(pdfTitle));
 
-            if (!updateInfo && (
+            if (!updateInfo && !(name.isEmpty() && title.isEmpty()) && (
                      JOptionPane.showConfirmDialog(mainFrame,
                        getMessageWithFallback(
                          "message.confirm.update_info",
@@ -1330,8 +1330,15 @@ public class Jmakepdfx extends AbstractCLI
 
             if (updateInfo)
             {
-               authorField.setText(name);
-               titleField.setText(title);
+               if (!name.isEmpty())
+               {
+                  authorField.setText(name);
+               }
+
+               if (!title.isEmpty())
+               {
+                  titleField.setText(title);
+               }
             }
 
             pageCountField.setText(pages);

@@ -16,7 +16,9 @@
 
 \TJHRequireIcons{texjavahelplibicons}{16}{24}
 
-\title{Jmakepdfx}
+\newcommand{\Jmakepdfx}{Jmakepdfx}
+
+\title{\Jmakepdfx}
 \author[Nicola L.C. Talbot]{Nicola L.C. Talbot\\\href{https://www.dickimaw-books.com/}{\nolinkurl{dickimaw-books.com}}}
 
 \TeXJavaHelpLoadResources{jmakepdfx,jmakepdfx-dict}
@@ -31,10 +33,13 @@
 \chapter{Introduction}
 \label{sec:intro}
 
-Jmakepdfx is a Java \gls{GUI} front-end application that uses GhostScript to convert
+\Jmakepdfx\ is a Java \gls{GUI} front-end application that uses GhostScript to convert
 PDF files to PDF/X compliant. This application comes with NO
 WARRANTY. In order to use this application you need to have both
-Java (at least JRE~8) and GhostScript installed. This application uses GhostScript's
+Java (at least JRE~8) and GhostScript installed. You will also need
+the \TeX\ Java Help Library. 
+
+This application uses GhostScript's
 \code{/prepress} setting, which is analogous to Acrobat Distiller's
 \qt{Prepress Optimized}. This will likely create a larger PDF than
 your original.
@@ -47,6 +52,65 @@ will end up as a raster image.
 
 TODO
 
+\chapter{Installation}
+\label{sec:install}
+
+If \Jmakepdfx\ is available in your \TeX\ distribution, the best
+method of installing it is via your \TeX\ distribution's package
+manager. The instructions below are provided in the event that 
+\Jmakepdfx\ is not available in your \TeX\ distribution.
+To test if \Jmakepdfx\ is correctly installed, run the following in
+a command prompt or terminal:
+\begin{terminal}
+\app{jmakepdfx} \switch{version}
+\end{terminal}
+This should print the version information.
+
+There are two methods of installation. The first is to install on
+the TEXMF tree, where TEXMF denotes the distribution root, for
+example \filefmt{/usr/local/texlive/2026/texmf-dist}
+or \homefilefmt{texmf} (Unix-like systems) 
+or \WindowsOSPath{c:/texlive/2026/texmf-dist} (Windows).
+
+\begin{itemize}
+\item TEXMF\filefmt{/scripts/jmakepdfx/jmakepdfx-helpset.tjh}
+\item TEXMF\filefmt{/scripts/jmakepdfx/jmakepdfx.jar}
+\item TEXMF\filefmt{/scripts/jmakepdfx/jmakepdfx.tlu}
+\end{itemize}
+
+The \file{texjavahelplib.jar} library also needs to be installed:
+\begin{itemize}
+\item TEXMF\filefmt{/scripts/texjavahelp/texjavahelplib.jar}
+\end{itemize}
+(There will be other files in the \filefmt{texjavahelp}
+subdirectory. These are only required if building the
+documentation. They are not needed to run \app{jmakepdfx}.)
+
+For Unix-like systems, add a symbolic link to the
+\TeX Lua script \file{jmakepdfx.tlu} called
+\filefmt{jmakepdfx} somewhere on your system PATH.
+This script locates \file{texjavahelplib.jar} and adds it to Java's
+class path when running \file{jmakepdfx.jar} (the application jar
+file).
+
+On Windows, copy \filefmt{runscript.exe} to \filefmt{jmakepdfx.exe}.
+This should find the \file{jmakepdfx.tlu} script and run it.
+
+The second approach is to place \file{texjavahelplib.jar} in the
+same directory as \file{jmakepdfx.jar}.
+\begin{itemize}
+\item \filefmt{jmakepdfx-helpset.tjh}
+\item \filefmt{jmakepdfx.jar}
+\item \filefmt{texjavahelplib.jar}
+\end{itemize}
+In this case, the \TeX Lua script is not required and the
+\file{jmakepdfx.jar} application can be run as normal for your
+system. For example, double-click on the \file{jmakepdfx.jar}
+in your filer, if supported, or via the terminal:
+\begin{terminal}
+java -jar jmakepdfx.jar
+\end{terminal}
+
 \chapter{Converting a PDF File}
 \label{sec:conversion}
 
@@ -56,6 +120,100 @@ TODO
 \label{sec:settings}
 
 TODO
+
+\chapter{Command Line Invocation}
+\label{sec:cmdline}
+
+\appdef{jmakepdfx}
+
+\Jmakepdfx\ defaults to \gls{GUI} mode, but it can be run in batch
+mode from the command line. The following switches are primarily
+intended for batch mode use, but can also be used with the \gls{GUI}
+mode, where they will populate or select the corresponding \gls{GUI} fields.
+
+\switchdef{help}
+Prints help information to the terminal and exits.
+
+\switchdef{version}
+Prints version information to the terminal and exits.
+This information includes the version details for
+the \TeX\ Java Help Library (\file{texjavahelplib.jar}).
+
+\switchdef{gui}
+Switches on the \gls{GUI} mode (default setting).
+
+\switchdef{batch}
+Switches on the batch mode setting.
+
+\switchdef{nogui}
+A synonym for \switch{batch}.
+
+\switchdef{in}
+Specifies the input PDF file. This switch is required for batch mode. With
+\gls{GUI} mode, it will set the file in the input file field when the main
+\Jmakepdfx\ window is opened.
+
+\switchdef{output}
+Specifies the output PDF file. This switch is required for batch mode. With
+\gls{GUI} mode, it will set the file in the output file field when the main
+\Jmakepdfx\ window is opened.
+
+\switchdef{title}
+Sets the PDF title for the output file metadata. If omitted, the title
+obtained from the input file will be used, if set.
+
+\switchdef{author}
+Sets the PDF author for the output file metadata. If omitted, the author
+obtained from the input file will be used, if set.
+
+\switchdef{gray}
+Use grayscale profile.
+
+\switchdef{cmyk}
+Use CMYK profile.
+
+\switchdef{icc}
+Indicates that the ICC file should be used: either the default ICC
+file that has previously been saved via the \gls{gui} application
+settings, see \sectionref{sec:settings}, or the file specified with
+\switch{icc-file} (if set).
+
+\switchdef{noicc}
+Indicates that the ICC file should not be used, even if one has been specified.
+
+\switchdef{icc-file}
+Specifies the path to the ICC file.
+
+\switchdef{timeout}
+Sets the maximum process time (in milliseconds).
+
+\switchdef{rm-tmp}
+
+On exit, removes the temporary PostScript file created by \Jmakepdfx\ that's 
+provided for use with the GhostScript process. This setting is the
+default.
+
+\switchdef{norm-tmp}
+
+Indicates that the temporary PostScript file created by \Jmakepdfx\
+should not be removed on exit. This setting is provided for
+debugging if something goes wrong with the GhostScript process.
+
+\switchdef{verbose}
+
+Switches on verbose mode.
+
+\switchdef{noverbose}
+
+Switches off verbose mode.
+
+\switchdef{debug}
+
+Switches on debug mode.
+
+\switchdef{nodebug}
+
+Switches off debug mode.
 
 \printmain
 
