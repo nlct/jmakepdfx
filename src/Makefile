@@ -5,7 +5,7 @@ else
   target_version =
 endif
 
-tjhxml2bib=tjhxml2bib
+tjhxml2bib=tjhxml2bib --copy-overwrite-xml
 tjhziphelpset=tjhziphelpset
 texjavahelpmk=texjavahelpmk #--debug-mode sty-data --log texparser.log
 arara=arara --verbose
@@ -64,6 +64,7 @@ doc/jmakepdfx.pdf	: doc/jmakepdfx-dict.bib doc/jmakepdfx.bib doc/jmakepdfx.tex
 
 doc/jmakepdfx-dict.bib	: dictionaries/jmakepdfx-en.xml
 	$(tjhxml2bib) \
+	--resource /com/dickimawbooks/texjavahelplib/dictionaries/texjavahelplib-en.xml \
 	dictionaries/jmakepdfx-en.xml \
 	-o doc/jmakepdfx-dict.bib
 

@@ -158,7 +158,7 @@ public class Jmakepdfx extends AbstractCLI
       printSyntaxItem(getMessage("syntax.icc-file", "--icc-file", "-c"));
       printSyntaxItem(getMessage("syntax.icc", "--[no]icc", "--icc-file"));
 
-      printSyntaxItem(getMessage("syntax.gray", "--gray", "-G"));
+      printSyntaxItem(getMessage("syntax.gray", "--gray", "--grey", "-G"));
       printSyntaxItem(getMessage("syntax.cmyk", "--cmyk", "-C"));
 
       printSyntaxItem(getMessage("syntax.rm-tmp", "--[no]rm-tmp"));
@@ -229,7 +229,7 @@ public class Jmakepdfx extends AbstractCLI
       {
          deleteTmp = false;
       }
-      else if (arg.equals("--gray") || arg.equals("-G"))
+      else if (arg.equals("--gray") || arg.equals("--grey") || arg.equals("-G"))
       {
          profileType = ProfileType.GRAY;
       }
@@ -551,11 +551,11 @@ public class Jmakepdfx extends AbstractCLI
       inputField.setEditable(false);
       inputField.setBorder(BorderFactory.createEmptyBorder());
 
-      JButton chooseInButton = helpLib.createJButton("inputfile", "choosein", this,
-        helpLib.getIconPrefix("inputfile.choosein", "open"), true, true);
+      JButton chooseInButton = helpLib.createJButton("widget.inputfile", "choosein", this,
+        helpLib.getIconPrefix("widget.inputfile.choosein", "open"), true, true);
 
       JLabelGroup labelGrp = new JLabelGroup();
-      JLabel inputLabel = helpLib.createJLabel(labelGrp, "inputfile.label", chooseInButton);
+      JLabel inputLabel = helpLib.createJLabel(labelGrp, "widget.inputfile", chooseInButton);
 
       row = createRow(FILE_ROW_HGAP, FILE_ROW_VGAP);
       mainComp.add(row);
@@ -575,10 +575,10 @@ public class Jmakepdfx extends AbstractCLI
       outputField.setEditable(false);
       outputField.setBorder(BorderFactory.createEmptyBorder());
 
-      JButton chooseOutButton = helpLib.createJButton("outputfile", "chooseout", this,
-        helpLib.getIconPrefix("inputfile.chooseout", "open"), true, true);
+      JButton chooseOutButton = helpLib.createJButton("widget.outputfile", "chooseout", this,
+        helpLib.getIconPrefix("widget.outputfile.chooseout", "open"), true, true);
 
-      JLabel outputLabel = helpLib.createJLabel(labelGrp, "outputfile.label", outputField);
+      JLabel outputLabel = helpLib.createJLabel(labelGrp, "widget.outputfile", outputField);
 
       row = createRow(FILE_ROW_HGAP, FILE_ROW_VGAP);
       mainComp.add(row);

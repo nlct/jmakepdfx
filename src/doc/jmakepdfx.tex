@@ -37,7 +37,8 @@
 PDF files to PDF/X compliant. This application comes with NO
 WARRANTY. In order to use this application you need to have both
 Java (at least JRE~8) and GhostScript installed. You will also need
-the \TeX\ Java Help Library. 
+the \TeX\ Java Help Library
+(\href{https://github.com/nlct/texjavahelp}{\nolinkurl{github.com/nlct/texjavahelp}}). 
 
 This application uses GhostScript's
 \code{/prepress} setting, which is analogous to Acrobat Distiller's
@@ -49,8 +50,6 @@ Note that PostScript does not support transparency. If your
 PDF file includes transparent elements, the resulting PDF/X file
 will end up as a raster image.
 \end{warning}
-
-TODO
 
 \chapter{Installation}
 \label{sec:install}
@@ -66,7 +65,8 @@ a command prompt or terminal:
 \end{terminal}
 This should print the version information.
 
-There are two methods of installation. The first is to install on
+If \Jmakepdfx\ is not available in your \TeX\ distribution, 
+there are two methods of installation. The first is to install on
 the TEXMF tree, where TEXMF denotes the distribution root, for
 example \filefmt{/usr/local/texlive/2026/texmf-dist}
 or \homefilefmt{texmf} (Unix-like systems) 
@@ -96,8 +96,19 @@ file).
 On Windows, copy \filefmt{runscript.exe} to \filefmt{jmakepdfx.exe}.
 This should find the \file{jmakepdfx.tlu} script and run it.
 
-The second approach is to place \file{texjavahelplib.jar} in the
-same directory as \file{jmakepdfx.jar}.
+\begin{information}
+The \ext+{tjh} file is a \TeX\ Java Help file, which contains the
+files used by the in-application help that's used by the
+\menu{help.manual} menu item and dialog \btn{help} buttons.
+The localisation files used for messages and the textual parts of
+\gls{GUI} elements are embedded in the \file{jmakepdfx.jar} file.
+Translations can be added via pull request at
+\href{https://github.com/nlct/jmakepdfx}{\nolinkurl{github.com/nlct/jmakepdfx}}.
+\end{information}
+
+The second approach is to place the \file{texjavahelplib.jar}
+library in the same directory as the \file{jmakepdfx.jar}
+application.
 \begin{itemize}
 \item \filefmt{jmakepdfx-helpset.tjh}
 \item \filefmt{jmakepdfx.jar}
@@ -108,13 +119,143 @@ In this case, the \TeX Lua script is not required and the
 system. For example, double-click on the \file{jmakepdfx.jar}
 in your filer, if supported, or via the terminal:
 \begin{terminal}
-java -jar jmakepdfx.jar
+java -jar /path/to/jmakepdfx.jar
 \end{terminal}
+(Replace \filefmt{/path/to/jmakepdfx.jar} with the path to
+\file{jmakepdfx.jar}.)
 
 \chapter{Converting a PDF File}
 \label{sec:conversion}
 
-TODO
+\FloatFig[hbtp]
+ {fig:mainwindow1}
+ {%
+   \includeimg[alt={Main window (no files selected)}]{mainwindow1}
+ }
+ {Main Window (Initial View)}
+
+The default setting is \gls{GUI} mode. (See \sectionref{sec:cmdline}
+for command line invocation.) On startup, the main window is as
+shown in \figureref{fig:mainwindow1}.
+
+\menudef{menu.file.input}
+Select the PDF file that needs conversion. This can be done via the 
+\menu{file.input} menu item or the corresponding button on the
+toolbar or you can use the \btn{widget.inputfile.choosein} button to the
+side of the \widget{inputfile} field or you can drag and drop the
+PDF from a filer window into the \widget{inputfile} field.
+
+\begin{information}
+If you startup \Jmakepdfx\ from the command line in \gls{GUI} mode
+with \switch{in} then the specified file will automatically be
+set in the \widget{inputfile} field.
+\end{information}
+
+Once the input file has be selected, \Jmakepdfx\ will run
+GhostScript to obtain the author, title and page count.
+These will be added to the \widget{pdfinfo.title} fields.
+
+\widgetdef{pdfinfo.title}
+The \widget{pdfinfo.title} fields consist of two editable fields
+(for the title and author) and two non-editable fields (for the page
+count and file size).
+
+\widgetdef{pdfinfo.pdftitle}
+The \widget{pdfinfo.pdftitle} field may be used to specify the PDF
+title metadata. If found in the input file, this field will
+automatically be set. You can edit this field. For example, if you
+want to change the title, if it's incorrect, or add a title if one
+wasn't found in the input file.
+
+\widgetdef{pdfinfo.pdfauthor}
+The \widget{pdfinfo.pdfauthor} field may be used to specify the PDF
+author metadata. If found in the input file, this field will
+automatically be set. You can edit this field. For example, if you
+want to change the author, if it's incorrect, or add the author's
+name if one wasn't found in the input file.
+
+The \inlineglsdef{pdfinfo.pagecount} field shows the number of pages found
+in the input file. 
+The \inlineglsdef{pdfinfo.filesize} field shows the file size of the input file.
+These fields are for informational purposes and are not editable.
+
+\widgetdef{profile.title}
+The profile may be set to either \inlineglsdef{profile.greyscale}
+for grayscale or \inlineglsdef{profile.cmyk} for CMYK.
+
+\widgetdef{profile.use_icc}
+If you want to use an \gls{ICC} profile, ensure that the
+\widget{profile.use_icc} checkbox is selected. You will need to
+specify an \gls{ICC} file. This can be done in the
+\dialog{properties} dialog,
+which can be opened with the \menu{settings.editsettings} menu item.
+
+\menudef{menu.file.output}
+Select the output PDF file. This can be done via the 
+\menu{file.output} menu item or the corresponding button on the
+toolbar or you can use the \btn{widget.outputfile.chooseout} button to the
+side of the \widget{outputfile} field. All these methods will open a
+file chooser where you can navigate to the desired directory and
+supply a filename. A default filename will be provided that's derived from
+the input filename. Change it as applicable.
+
+\begin{information}
+If you startup \Jmakepdfx\ from the command line in \gls{GUI} mode
+with \switch{output} then the specified file will automatically be
+set in the \widget{outputfile} field.
+\end{information}
+
+If you have previously created an output file that you want to
+overwrite, you can also drag and drop the
+PDF from a filer window into the \widget{outputfile} field.
+
+\menudef{menu.tools.convert}
+The \menu{tools.convert} menu item or the corresponding button on the
+main window is only enabled once both an input file and output file
+have been specified (see \figureref{fig:mainwindow2}). 
+
+Once you have selected all the appropriate settings,
+select \menu{tools.convert} or click on 
+\btn{menu.tools.convert} to run GhostScript.
+
+\begin{information}
+The resulting PDF file is likely to be bigger than the original.
+\end{information}
+
+You may be prompted to supply the path to GhostScript if 
+\Jmakepdfx\ can't detect it. \Jmakepdfx\ searches for:
+\filefmt{gs}, \filefmt{gswin64c}, \filefmt{gsos2}.
+If you have a 32-bit Windows and require \filefmt{gswin32c.exe}
+then you will need to set the path in the \dialog{properties} dialog
+(see \sectionref{sec:settings}).
+
+\begin{warning}
+If your file size is very large, you may get a
+\qt{\errmsg[\meta{n}]{timedout}} message, in which case  
+increase the
+\widget{properties.timeout} value in the \dialog{properties} dialog.
+\end{warning}
+
+\FloatFig
+ {fig:mainwindow2}
+ {%
+   \includeimg[alt={Main window (input and output files selected)}]{mainwindow2}
+ }
+ {Main Window (Input and Output Files Selected)}
+
+\widgetdef{button.auto_open}
+If the \widget{auto_open} checkbox is selected and the conversion is
+successful then \Jmakepdfx\ will attempt to open the PDF file.
+Depending on your system settings, you may need to supply the path
+to your preferred PDF viewer. Some systems may not allow this
+action.
+
+\begin{information}
+If an error occurs, try running \app{jmakepdfx} with
+\switch{verbose} (which will print the process call to STDOUT) 
+and \switch{norm-tmp} (to retain the file used by the process).
+There may be a file permission problem.
+\end{information}
 
 \chapter{Application Settings}
 \label{sec:settings}
@@ -143,7 +284,13 @@ the \TeX\ Java Help Library (\file{texjavahelplib.jar}).
 Switches on the \gls{GUI} mode (default setting).
 
 \switchdef{batch}
-Switches on the batch mode setting.
+Switches on the batch mode setting (that is, switch off \gls{GUI}
+mode).
+
+\begin{important}
+Note that even if \switch{batch} is present in the argument list, 
+\file{jmakepdfx.tlu} will run with its own \gls{GUI} flag on.
+\end{important}
 
 \switchdef{nogui}
 A synonym for \switch{batch}.
@@ -153,10 +300,19 @@ Specifies the input PDF file. This switch is required for batch mode. With
 \gls{GUI} mode, it will set the file in the input file field when the main
 \Jmakepdfx\ window is opened.
 
+The \switch{in} switch is optional. You can simply specify the
+filename without \switch{in} (provided the filename doesn't start
+with a hyphen).
+
 \switchdef{output}
 Specifies the output PDF file. This switch is required for batch mode. With
 \gls{GUI} mode, it will set the file in the output file field when the main
 \Jmakepdfx\ window is opened.
+
+The \switch{output} switch is optional. You can simply specify the
+filename without \switch{output} (provided the filename doesn't start
+with a hyphen). If you omit \switch{output} you must specify the
+output file \emph{after} you have specified the input file.
 
 \switchdef{title}
 Sets the PDF title for the output file metadata. If omitted, the title
@@ -174,7 +330,7 @@ Use CMYK profile.
 
 \switchdef{icc}
 Indicates that the ICC file should be used: either the default ICC
-file that has previously been saved via the \gls{gui} application
+file that has previously been saved via the \gls{GUI} application
 settings, see \sectionref{sec:settings}, or the file specified with
 \switch{icc-file} (if set).
 
@@ -186,18 +342,28 @@ Specifies the path to the ICC file.
 
 \switchdef{timeout}
 Sets the maximum process time (in milliseconds).
+If the GhostScript process runs on too long, the timeout will cancel
+the process to prevent it from becoming a zombie process.
+A large PDF file with a CMYK profile may take a while, in which case
+you may need to extend the maximum process time.
 
 \switchdef{rm-tmp}
 
-On exit, removes the temporary PostScript file created by \Jmakepdfx\ that's 
+On exit, removes the temporary PostScript file created by \app{jmakepdfx} that's 
 provided for use with the GhostScript process. This setting is the
 default.
 
 \switchdef{norm-tmp}
 
-Indicates that the temporary PostScript file created by \Jmakepdfx\
+Indicates that the temporary PostScript file created by \app{jmakepdfx}
 should not be removed on exit. This setting is provided for
 debugging if something goes wrong with the GhostScript process.
+
+\begin{information}
+If a problem occurs, try running \app{jmakepdfx} with
+\switch{verbose} (which will print the process call to STDOUT) 
+and \switch{norm-tmp} (to retain the file used by the process).
+\end{information}
 
 \switchdef{verbose}
 
@@ -210,6 +376,9 @@ Switches off verbose mode.
 \switchdef{debug}
 
 Switches on debug mode.
+The \meta{level} may be omitted. If present, it should be an integer
+that indicates the debugging level. A value of 0 is equivalent to
+\switch{nodebug}.
 
 \switchdef{nodebug}
 

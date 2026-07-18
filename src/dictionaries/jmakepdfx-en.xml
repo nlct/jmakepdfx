@@ -11,14 +11,14 @@ Nicola Talbot
 <entry key="syntax.title">Syntax:</entry>
 <entry key="syntax.options">{0} [&lt;option&gt;]+ [&lt;in PDF&gt;] [&lt;out PDF&gt;]</entry>
 <entry key="syntax.in">{0} (or {1}) &lt;PDF-file&gt;	Input PDF file (required for batch mode).</entry>
-<entry key="syntax.out">{0} (or {1}) &lt;PDF-file&gt;	Output PDF file (required for batch mode).</entry>
+<entry key="syntax.output">{0} (or {1}) &lt;PDF-file&gt;	Output PDF file (required for batch mode).</entry>
 <entry key="syntax.gui">{0} (or {1})	Run in GUI mode (default).</entry>
 <entry key="syntax.batch">{0} (or {1})	Run in batch mode.</entry>
 <entry key="syntax.title">{0} (or {1}) &lt;title&gt;	The PDF title.</entry>
 <entry key="syntax.author">{0} (or {1}) &lt;author&gt;	The PDF author.</entry>
 <entry key="syntax.icc-file">{0} (or {1}) &lt;file&gt;	The ICC file.</entry>
 <entry key="syntax.icc">{0}	Use the ICC file (the default or as specified by {1}).</entry>
-<entry key="syntax.gray">{0} (or {1})	Use grayscale profile.</entry>
+<entry key="syntax.gray">{0} (or {1} or {2})	Use grayscale profile.</entry>
 <entry key="syntax.cmyk">{0} (or {1})	Use CMYK profile.</entry>
 
 <entry key="syntax.rm-tmp">{0}	Remove temporary file on exit (default).</entry>
@@ -89,17 +89,17 @@ Nicola Talbot
 
 <!-- Main Component -->
 
-<entry key="inputfile.label">Input File:</entry>
-<entry key="inputfile.label.mnemonic">I</entry>
+<entry key="widget.inputfile">Input File:</entry>
+<entry key="widget.inputfile.mnemonic">I</entry>
 
-<entry key="inputfile.choosein">Choose...</entry>
-<entry key="inputfile.choosein.iconimage">open</entry>
+<entry key="widget.inputfile.choosein">Choose...</entry>
+<entry key="widget.inputfile.choosein.iconimage">open</entry>
 
-<entry key="outputfile.label">Output File:</entry>
-<entry key="outputfile.label.mnemonic">O</entry>
+<entry key="widget.outputfile">Output File:</entry>
+<entry key="widget.outputfile.mnemonic">O</entry>
 
-<entry key="outputfile.chooseout">Choose...</entry>
-<entry key="outputfile.chooseout.iconimage">open</entry>
+<entry key="widget.outputfile.chooseout">Choose...</entry>
+<entry key="widget.outputfile.chooseout.iconimage">open</entry>
 
 <entry key="pdfinfo.title">PDF Info</entry>
 
@@ -117,11 +117,14 @@ Nicola Talbot
 <entry key="profile.greyscale.mnemonic">G</entry>
 <entry key="profile.cmyk">CMYK</entry>
 <entry key="profile.cmyk.mnemonic">K</entry>
+
 <entry key="profile.use_icc">Use ICC</entry>
 <entry key="profile.use_icc.mnemonic">C</entry>
+<entry key="profile.use_icc.initvalue">false</entry>
 
 <entry key="button.auto_open">Automatically open PDF on completion</entry>
 <entry key="button.auto_open.mnemonic">P</entry>
+<entry key="button.auto_open.initvalue">true</entry>
 
 <!-- File Filter -->
 

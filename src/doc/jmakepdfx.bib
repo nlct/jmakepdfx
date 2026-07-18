@@ -7,6 +7,11 @@
   long={Graphical User Interface}
 }
 
+@abbreviation{ICC,
+  short={ICC},
+  long={International Color Consortium}
+}
+
 % NAMED FILES
 
 @file{file.texjavahelplib.jar,
@@ -16,9 +21,13 @@
 @file{file.jmakepdfx.tlu}
 @file{file.jmakepdfx.jar}
 
+% FILE EXTENSIONS
+
+@fileext{ext.tjh}
+
 % APPLICATIONS
 
-@application{app.jmakepdfx,
+@commonapplication{app.jmakepdfx,
  name={\appfmt{jmake\-pdfx}},
  syntax={\oargm{option}+ \oargm{in PDF} \oargm{out PDF}}
 }
@@ -27,14 +36,14 @@
   parent={app.jmakepdfx},
   name={\longargfmt{help}},
   shortswitch={h},
-  description={Prints help and exits}
+  description={prints help and exits}
 }
 
 @switch{switch.version,
   parent={app.jmakepdfx},
   name={\longargfmt{version}},
   shortswitch={v},
-  description={Prints version information and exits}
+  description={prints version information and exits}
 }
 
 @switch{switch.in,
@@ -45,9 +54,9 @@
   description={specifies the input PDF file (required for batch mode)}
 }
 
-@switch{switch.out,
+@switch{switch.output,
   parent={app.jmakepdfx},
-  name={\longargfmt{out}},
+  name={\longargfmt{output}},
   shortswitch={o},
   syntax={\meta{PDF-file}},
   description={specifies the output PDF file (required for batch mode)}
@@ -72,13 +81,101 @@
 @switch{switch.debug,
   parent={app.jmakepdfx},
   name={\longargfmt{debug}},
-  description={switch on debug mode}
+  syntax={\oargm{level}},
+  description={switches on debug mode}
 }
 
 @switch{switch.nodebug,
   parent={app.jmakepdfx},
   name={\longargfmt{nodebug}},
-  description={switch off debug mode (default)}
+  description={switches off debug mode (default)}
 }
 
+@switch{switch.gui,
+  parent={app.jmakepdfx},
+  name={\longargfmt{gui}},
+  shortswitch={g},
+  description={switches on \gls{GUI} mode (default)}
+}
+
+@switch{switch.batch,
+  parent={app.jmakepdfx},
+  name={\longargfmt{batch}},
+  shortswitch={b},
+  description={switches on the batch mode setting}
+}
+
+@switch{switch.nogui,
+  parent={app.jmakepdfx},
+  name={\longargfmt{nogui}},
+  alias={switch.batch},
+  description={synonym for \switch{batch}}
+}
+
+@switch{switch.icc,
+  parent={app.jmakepdfx},
+  name={\longargfmt{icc}},
+  description={indicates that the \gls{ICC} file (the default or as specified
+by \switch{icc-file}) should be used}
+}
+
+@switch{switch.noicc,
+  parent={app.jmakepdfx},
+  name={\longargfmt{noicc}},
+  description={ignores \gls{ICC} file, even if one has been
+specified}
+}
+
+@switch{switch.icc-file,
+  parent={app.jmakepdfx},
+  name={\longargfmt{icc\dhyphen}},
+  shortswitch={c},
+  syntax={\meta{file}},
+  description={identifies the \gls{ICC} file (for use with \switch{icc})}
+}
+
+@switch{switch.gray,
+  parent={app.jmakepdfx},
+  name={\longargfmt{gray}},
+  shortswitch={G},
+  description={use grayscale profile}
+}
+
+@switch{switch.cmyk,
+  parent={app.jmakepdfx},
+  name={\longargfmt{cmyk}},
+  shortswitch={C},
+  description={use CMYK profile}
+}
+
+@switch{switch.rm-tmp,
+  parent={app.jmakepdfx},
+  name={\longargfmt{rm\dhyphen tmp}},
+  description={remove temporary file created by \app{jmakepdfx} on exit}
+}
+
+@switch{switch.norm-tmp,
+  parent={app.jmakepdfx},
+  name={\longargfmt{norm\dhyphen tmp}},
+  description={don't remove temporary file created by \app{jmakepdfx} on exit}
+}
+
+@switch{switch.timeout,
+  parent={app.jmakepdfx},
+  name={\longargfmt{timeout}},
+  syntax={\meta{millisec}},
+  description={sets the maximum process time (in milliseconds)}
+}
+
+@switch{switch.noverbose,
+  parent={app.jmakepdfx},
+  name={\longargfmt{noverbose}},
+  description={switches off verbose mode (default)}
+}
+
+@switch{switch.verbose,
+  parent={app.jmakepdfx},
+  name={\longargfmt{verbose}},
+  description={switches on verbose mode}
+}
 
