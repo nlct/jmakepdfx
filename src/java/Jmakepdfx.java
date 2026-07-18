@@ -221,11 +221,16 @@ public class Jmakepdfx extends AbstractCLI
       {
          guiMode = false;
       }
-      else if (arg.equals("rm-tmp"))
+      else if (arg.equals("--rm-tmp")
+            || arg.equals("-deletetmp") // v0.4.1b compatibility
+              )
       {
          deleteTmp = true;
       }
-      else if (arg.equals("norm-tmp") || arg.equals("no-rm-tmp"))
+      else if (arg.equals("--norm-tmp")
+            || arg.equals("--no-rm-tmp")
+            || arg.equals("-nodeletetmp") // v0.4.1b compatibility
+              )
       {
          deleteTmp = false;
       }
