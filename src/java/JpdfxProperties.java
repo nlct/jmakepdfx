@@ -625,5 +625,5 @@ public class JpdfxProperties extends Properties
 
    private Vector<String> recentList;
 
-   private static final long DEFAULT_TIMEOUT = 1000 * 60 * 180; // 3 hours
+   private static final long DEFAULT_TIMEOUT = 1000 * 60 * 5; // 5 minutes
 }

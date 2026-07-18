@@ -146,19 +146,29 @@ Nicola Talbot
 <entry key="properties.title">Properties</entry>
 <entry key="properties.query.location.viewer">Please specify location of {0} viewer</entry>
 <entry key="properties.query.location.app">Please specify location of {0} application</entry>
+
 <entry key="properties.startup">Startup Directory</entry>
+
 <entry key="properties.startup.home">Home</entry>
 <entry key="properties.startup.home.mnemonic">M</entry>
+
 <entry key="properties.startup.cwd">Current Working Directory</entry>
 <entry key="properties.startup.cwd.mnemonic">W</entry>
+
 <entry key="properties.startup.last">Last</entry>
 <entry key="properties.startup.last.mnemonic">S</entry>
+
 <entry key="properties.startup.custom">Custom</entry>
 <entry key="properties.startup.custom.mnemonic">U</entry>
+
+<entry key="properties.path">File Paths</entry>
+
 <entry key="properties.path.gs">Path to GhostScript</entry>
 <entry key="properties.path.gs.mnemonic">G</entry>
+
 <entry key="properties.path.pdfviewer">Path to PDF viewer</entry>
 <entry key="properties.path.pdfviewer.mnemonic">P</entry>
+
 <entry key="properties.path.icc">Path to ICC File</entry>
 <entry key="properties.path.icc.mnemonic">I</entry>
 

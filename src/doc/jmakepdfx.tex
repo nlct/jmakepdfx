@@ -51,6 +51,17 @@ PDF file includes transparent elements, the resulting PDF/X file
 will end up as a raster image.
 \end{warning}
 
+Bugs can be reported via the \url{https://github.com/nlct/jmakepdfx}
+issue tracker. Please provide the version number of \Jmakepdfx,
+GhostScript and Java.
+\begin{terminal}
+\app{jmakepdfx} \switch{version}
+gs -version
+java -version
+\end{terminal}
+The \switch{verbose} and \switch{debug} switches can provide
+additional information that can assist debugging.
+
 \chapter{Installation}
 \label{sec:install}
 
@@ -260,7 +271,110 @@ There may be a file permission problem.
 \chapter{Application Settings}
 \label{sec:settings}
 
-TODO
+\menudef{menu.settings.editsettings}
+Application settings can be modified using the
+\menu{settings.editsettings} menu item, which will open the
+\dialog{properties} dialog box (\figureref{fig:properties}).
+The settings are saved when \Jmakepdfx\ is exited and loaded the
+next time \Jmakepdfx\ is run. The saved settings can be overridden
+by command line switches.
+
+\FloatFig[htbp]
+ {fig:properties}
+ {%
+   \includeimg[alt={Properties dialog window}]{properties}
+ }
+ {Properties Dialog}
+
+\widgetdef{properties.title}
+
+The \dialog{properties} dialog provides a way to set the default
+directory (folder) to start looking for PDF files when you next use
+\Jmakepdfx. The \inlineglsdef{properties.startup} setting is
+specified to the \gls{GUI} mode and is ignored for command line use.
+
+\widgetdef{properties.startup.home}
+Select the \widget{properties.startup.home} button if you want the
+default directory to be your home directory.
+
+\widgetdef{properties.startup.cwd}
+Select the \widget{properties.startup.cwd} button if you want the
+default directory to be your current working directory.
+
+\widgetdef{properties.startup.last}
+Select the \widget{properties.startup.last} button if you want the
+default directory to be the directory that you selected files from
+on the previous instance of \Jmakepdfx.
+
+\widgetdef{properties.startup.custom}
+Select the \widget{properties.startup.custom} button if you want the
+default directory to be a specific directory. Selecting this button
+will enable the \btn{file_choose} button, which will open a
+directory selector.
+
+\widgetdef{properties.path.gs}
+\Jmakepdfx\ will attempt to find the GhostScript application on your
+system path. If it is unable it or if an incorrect application was
+selected, you can use the \btn{file_choose} button for the 
+\widget{properties.path.gs} field to select the correct application.
+
+\begin{information}
+The \widget{properties.path.gs} setting is used in the batch mode
+command invocation (see \sectionref{sec:cmdline}). You will need to
+run \Jmakepdfx\ in \gls{GUI} mode first to make sure that it's
+correctly set if GhostScript can't be correctly found on your
+system's path.
+\end{information}
+
+\widgetdef{properties.path.pdfviewer}
+If the \widget{auto_open} checkbox in the main window is selected, 
+\Jmakepdfx\ will attempt to open the output PDF file.
+If the \widget{properties.path.pdfviewer} is not set then 
+your system's default method for opening PDF files will be used.
+Some system's don't allow this or you may prefer a different
+application, in which case use the \btn{file_choose} button for the
+\widget{properties.path.pdfviewer} field to select the preferred
+application. The \widget{properties.path.pdfviewer} setting is
+specific to \gls{GUI} mode and is ignored by batch mode.
+
+\widgetdef{properties.path.icc}
+If the \widget{profile.use_icc} checkbox in the main window is
+selected, the file specified in the \widget{properties.path.icc}
+field will be used. If this field hasn't been set, you will be
+prompted to select the \gls{ICC} file. This setting is ignored
+if the \widget{profile.use_icc} checkbox is not selected.
+
+\begin{information}
+The \widget{properties.path.icc} setting is used in batch mode if
+\switch{icc-file} isn't set and the \widget{profile.use_icc}
+setting is on (either because it has been remembered from the
+previous instance of \Jmakepdfx\ or because \switch{icc} was also
+used).
+\end{information}
+
+\widgetdef{properties.timeout}
+The maximum process time is given by the \widget{properties.timeout}
+spinner field. The \gls{GUI} interface uses minutes as the time
+unit. The \switch{timeout} switch uses milliseconds.
+
+\begin{important}
+The timeout value must be set before a process is started. Changing
+the setting while a process is running won't have an effect.
+\end{important}
+
+\Jmakepdfx\ imposes a time limit on processes in the event a process
+gets stuck or becomes orphaned. If you have a very large PDF file
+(large as in file size rather than total number of pages) you may
+need to set a higher \widget{properties.timeout}.
+
+
+\begin{information}
+If \Jmakepdfx\ is run in batch mode, the timeout property will
+default to that given by the saved \widget{properties.timeout}
+from the previous instance that \Jmakepdfx\ was run in \gls{GUI}
+mode unless \switch{timeout} is used to override it.
+\end{information}
+
 
 \chapter{Command Line Invocation}
 \label{sec:cmdline}
