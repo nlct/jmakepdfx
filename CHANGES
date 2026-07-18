@@ -1,11 +1,18 @@
 v0.5
 
-  * Moved from local subversion repository to GitHub
+  * Moved from local subversion repository to GitHub.
 
   * Rewritten to use the TeX Java Help Library (replacing
     JavaHelp and the Java Look and Feel Graphics Repository).
 
   * Updated to take into account GhostScript changes.
+
+  * Removed fetch ICC function (target no longer available).
+
+  * Added batch mode.
+
+  * Changed to double hyphen long command line switches with single
+    hyphen short switch abbreviations.
 
 v0.4.1b:
 
