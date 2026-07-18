@@ -15,7 +15,7 @@ comply with TeX Live requirements.  This means no duplicate
 filenames (except for `README` etc) and no generic filenames (such
 as `save.png`). This means that `texjavahelplib.jar` can't be
 bundled up with jmakepdfx (as it's also used with other
-applications). Instead, the TeX Java Help (TJH) system needs to be
+applications). Instead, the [TeX Java Help (TJH) system](https://github.com/nlct/texjavahelp) needs to be
 provided separately.  All icon files and localisation files are
 bundled in the jar files, and the HTML and XML files for the
 in-application manual (accessed via Help &rarr; Manual) are provided in a TJH file.
