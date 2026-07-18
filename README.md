@@ -63,10 +63,12 @@ need to be in the same directory as `jmakepdfx.jar`.
   - `texjavahelplib.jar`
 
 In this case, the TeXLua script is not required. The `jmakepdfx`
-application can be run as normal for your system. For example,
+application can be run as normal for your system. For example:
+
 ```bash
 java -jar /path/to/jmakepdfx.jar
 ```
+
 (Replace `/path/to/jmakepdfx.jar` with the path to `jmakepdfx.jar`.)
 
 ## Source Code
@@ -78,6 +80,82 @@ Alternatively, if `texjavahelplib.jar` is in
 _TEXMF_`/tex/scripts/texjavahelp/`, you will need to use
 `jmakepdfx.tlu` (in `bin`) to find `texjavahelplib.jar` and add it
 to the class path.
+
+The `icons` and `dictionaries` directories need to be included in
+the `jar` file.
+
+Replace `texjavahelplib.jar` with the path to `texjavahelplib.jar`:
+
+```bash
+cd java
+javac -d ../classes -cp texjavahelplib.jar *.java
+cd ../classes
+mkdir -p com/dickimawbooks/jmakepdfx/dictionaries/
+cp ../dictionaries/jmakepdfx-*.xml com/dickimawbooks/jmakepdfx/dictionaries/
+mkdir -p com/dickimawbooks/jmakepdfx/icons/
+cp ../java/icons/*.png com/dickimawbooks/jmakepdfx/icons/
+jar cmf ../java/Manifest.txt ../lib/jmakepdfx.jar \
+com/dickimawbooks/jmakepdfx/*.class \
+com/dickimawbooks/jmakepdfx/dictionaries \
+com/dickimawbooks/jmakepdfx/dictionaries/*.xml \
+com/dickimawbooks/jmakepdfx/icons/*.png
+```
+
+Note: jar files are a special type of zip file. It's possible for
+the zip archive to omit a directory name but include the contents of
+the directory. The above explicitly creates a `dictionaries`
+sub-directory in the jar file but not an `icons` sub-directory.
+The TJH system requires the presence of the `dictionaries` jar entry
+for the localisation files. There's no requirement for the `icons` directory.
+
+The `jmakepdfx-helpset.tjh` file must be created before jmakepdfx is
+run otherwise there will be an error about a missing helpset.
+This is done as follows:
+
+Create the `jmakepdfx-dict.bib` file from the appropriate
+localisation files. This is a bib2gls file that can be created
+with `tjhxml2bib`:
+
+```bash
+tjhxml2bib --resource /com/dickimawbooks/texjavahelplib/dictionaries/texjavahelplib-en.xml \
+dictionaries/jmakepdfx-en.xml \
+-o doc/jmakepdfx-dict.bib
+```
+
+Build the PDF from LaTeX source:
+
+```bash
+cd doc
+arara jmakepdfx
+```
+
+If you don't have arara:
+
+```bash
+lualatex jmakepdfx
+bib2gls jmakepdfx
+lualatex jmakepdfx
+lualatex jmakepdfx
+```
+
+Don't remove the aux, toc and glstex files as they are all required in
+the next step.
+
+Create the helpset files:
+
+```bash
+texjavahelpmk doc/jmakepdfx.tex lib/helpset
+```
+
+Create the TJH file (from `lib/helpset` and the license file):
+
+```bash
+tjhziphelpset --license-file doc/gpl-3.0-standalone.html en \
+lib \
+--output lib/jmakepdfx-helpset.tjh
+```
+
+The `lib/helpset` directory and the other temporary files can now be removed if you want.
 
 ## Licence
 
