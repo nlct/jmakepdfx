@@ -1,9 +1,3 @@
-% arara: lualatex
-% arara: bib2gls
-% arara: lualatex
-% arara: lualatex
-\documentclass[toc=listof]{scrreport}
-
 \usepackage{fontspec}
 \setmainfont{Linux Libertine O}
 \usepackage
@@ -12,7 +6,7 @@
  ]{texjavahelp}
 
 \hypersetup{colorlinks,linkcolor=blue}
-\graphicspath{{images/}}
+\graphicspath{{images-\jmakepdfxlangtag/}{../en-sharedimages/}}
 
 \TJHRequireIcons{texjavahelplibicons}{16}{24}
 
@@ -21,7 +15,7 @@
 \title{\Jmakepdfx}
 \author[Nicola L.C. Talbot]{Nicola L.C. Talbot\\\href{https://www.dickimaw-books.com/}{\nolinkurl{dickimaw-books.com}}}
 
-\TeXJavaHelpLoadResources{jmakepdfx,jmakepdfx-dict}
+\TeXJavaHelpLoadResources{jmakepdfx,jmakepdfx-dict-\jmakepdfxlangtag}
 
 \begin{document}
 \maketitle
@@ -191,8 +185,8 @@ The \inlineglsdef{pdfinfo.filesize} field shows the file size of the input file.
 These fields are for informational purposes and are not editable.
 
 \widgetdef{profile.title}
-The profile may be set to either \inlineglsdef{profile.greyscale}
-for grayscale or \inlineglsdef{profile.cmyk} for CMYK.
+The profile may be set to either \inlineglsdef{profile.grayscale}
+for \manmsg{grayscale} or \inlineglsdef{profile.cmyk} for CMYK.
 
 \widgetdef{profile.use_icc}
 If you want to use an \gls{ICC} profile, ensure that the
@@ -437,10 +431,13 @@ Sets the PDF author for the output file metadata. If omitted, the author
 obtained from the input file will be used, if set.
 
 \switchdef{gray}
-Use grayscale profile.
+Use \manmsg{grayscale} profile.
+
+\switchdef{grey}
+Synonym for \switch{gray}.
 
 \switchdef{cmyk}
-Use CMYK profile.
+Use CMYK \manmsg{color} profile.
 
 \switchdef{icc}
 Indicates that the ICC file should be used: either the default ICC

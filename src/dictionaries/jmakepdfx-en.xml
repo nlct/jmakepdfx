@@ -113,8 +113,8 @@ Nicola Talbot
 <entry key="pdfinfo.filesize">File Size:</entry>
 
 <entry key="profile.title">Profile:</entry>
-<entry key="profile.greyscale">Greyscale</entry>
-<entry key="profile.greyscale.mnemonic">G</entry>
+<entry key="profile.grayscale">Grayscale</entry>
+<entry key="profile.grayscale.mnemonic">G</entry>
 <entry key="profile.cmyk">CMYK</entry>
 <entry key="profile.cmyk.mnemonic">K</entry>
 
@@ -195,7 +195,7 @@ Nicola Talbot
 <entry key="message.select_input">Use {0} to select the input PDF file</entry>
 <entry key="message.select_output">Use {0} to select the output PDF file</entry>
 <entry key="message.running">Running {0}</entry>
-<entry key="message.file_loaded">Check the required colour profile and click on ''{0}''</entry>
+<entry key="message.file_loaded">Check the required color profile and click on ''{0}''</entry>
 <entry key="message.confirm">Confirm</entry>
 <entry key="message.confirm.overwrite">File ''{0}'' already exists.
 Overwrite?</entry>
@@ -243,5 +243,11 @@ Please provide full path.</entry>
 <entry key="error.conversion_failed">Conversion failed</entry>
 
 <entry key="error.properties.missing_custom_dir">Custom setting requires a directory name</entry>
+
+<!-- Not in the index -->
+
+<entry key="manual.gray">gray</entry>
+<entry key="manual.grayscale">grayscale</entry>
+<entry key="manual.color">color</entry>
 
 </properties>

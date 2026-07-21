@@ -1,4 +1,4 @@
-jmakepdfx-dict.bib
+jmakepdfx-dict-*.bib
 jmakepdfx*.pdf
 *.glstex
 *.aux

@@ -666,15 +666,15 @@ public class Jmakepdfx extends AbstractCLI
 
       ButtonGroup btnGrp = new ButtonGroup();
 
-      greyButton = helpLib.createJRadioButton("profile", "greyscale",
+      grayButton = helpLib.createJRadioButton("profile", "grayscale",
          (profileType != null && profileType == ProfileType.GRAY)
           || (profileType == null && properties.isGrayProfile()),
          btnGrp);
 
-      row.add(greyButton);
+      row.add(grayButton);
 
       cmykButton = helpLib.createJRadioButton("profile", "cmyk",
-         !greyButton.isSelected(), btnGrp);
+         !grayButton.isSelected(), btnGrp);
       row.add(cmykButton);
 
       iccButton = helpLib.createJCheckBox("profile", "use_icc",
@@ -934,7 +934,7 @@ public class Jmakepdfx extends AbstractCLI
 
    public boolean isGrayProfile()
    {
-      if (greyButton == null)
+      if (grayButton == null)
       {
          if (profileType != null)
          {
@@ -946,7 +946,7 @@ public class Jmakepdfx extends AbstractCLI
          }
       }
 
-      return greyButton.isSelected();
+      return grayButton.isSelected();
    }
 
    public boolean isCMYKProfile()
@@ -1012,7 +1012,7 @@ public class Jmakepdfx extends AbstractCLI
       {
          properties.setToolBarOrientation(toolbar.getOrientation());
 
-         if (greyButton.isSelected())
+         if (grayButton.isSelected())
          {
             properties.setGrayProfile();
          }
@@ -1987,7 +1987,7 @@ public class Jmakepdfx extends AbstractCLI
    JTextField inputField, outputField;
    JFileChooser fileChooser;
    JTextField titleField, authorField, pageCountField, sizeField;
-   JRadioButton greyButton, cmykButton;
+   JRadioButton grayButton, cmykButton;
    JCheckBox iccButton, autoOpenButton;
    TJHAbstractAction inputAction, outputAction, settingsAction;
    TJHAbstractAction convertAction, abortAction;

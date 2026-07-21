@@ -138,14 +138,21 @@ specified}
   parent={app.jmakepdfx},
   name={\longargfmt{gray}},
   shortswitch={G},
-  description={use grayscale profile}
+  description={use \manmsg{grayscale} profile}
+}
+
+@switch{switch.grey,
+  parent={app.jmakepdfx},
+  name={\longargfmt{grey}},
+  alias={switch.gray},
+  description={synonym for \switch{gray}}
 }
 
 @switch{switch.cmyk,
   parent={app.jmakepdfx},
   name={\longargfmt{cmyk}},
   shortswitch={C},
-  description={use CMYK profile}
+  description={use CMYK \manmsg{color} profile}
 }
 
 @switch{switch.rm-tmp,

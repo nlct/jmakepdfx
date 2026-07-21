@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>English (GB) language file for jmakepdfx
+https://github.com/nlct/jmakepdfx
+GPL-3.0
+Nicola Talbot
+</comment>
+
+<!--  Syntax -->
+<entry key="syntax.gray">{0} (or {1} or {2})	Use greyscale profile.</entry>
+
+<!-- Menus -->
+
+<entry key="menu.help.license">Licence</entry>
+
+<!-- Main Component -->
+
+<entry key="profile.grayscale">Greyscale</entry>
+
+<!-- License Dialog -->
+
+<entry key="license.title">Licence</entry>
+
+<!-- Messages -->
+
+<entry key="message.file_loaded">Check the required colour profile and click on ''{0}''</entry>
+
+<!-- Not in the index -->
+
+<entry key="manual.gray">grey</entry>
+<entry key="manual.grayscale">greyscale</entry>
+<entry key="manual.color">colour</entry>
+
+</properties>
