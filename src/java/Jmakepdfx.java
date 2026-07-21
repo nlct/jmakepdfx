@@ -148,7 +148,7 @@ public class Jmakepdfx extends AbstractCLI
 
       printSyntaxItem(getMessage("syntax.in", "--in", "-i"));
 
-      printSyntaxItem(getMessage("syntax.out", "--output", "-o"));
+      printSyntaxItem(getMessage("syntax.output", "--output", "-o"));
 
       printSyntaxItem(getMessage("syntax.gui", "--[no]gui", "-g"));
       printSyntaxItem(getMessage("syntax.batch", "--batch", "-b"));
@@ -188,7 +188,7 @@ public class Jmakepdfx extends AbstractCLI
          return 1;
       }
 
-      return 0;
+      return super.getCLIArgCount(arg);
    }
 
    @Override
@@ -242,7 +242,7 @@ public class Jmakepdfx extends AbstractCLI
       {
          profileType = ProfileType.CMYK;
       }
-      else if (isArg(arg, "--in", "-i", returnVals))
+      else if (isArg(arg, "-i", "--in", returnVals))
       {
          if (inFile != null)
          {
@@ -258,7 +258,7 @@ public class Jmakepdfx extends AbstractCLI
 
          inFile = new File(returnVals[0].toString());
       }
-      else if (isArg(arg, "--output", "-o", returnVals))
+      else if (isArg(arg, "-o", "--output", returnVals))
       {
          if (outFile != null)
          {
@@ -274,7 +274,7 @@ public class Jmakepdfx extends AbstractCLI
 
          outFile = new File(returnVals[0].toString());
       }
-      else if (isArg(arg, "--title", "-t", returnVals))
+      else if (isArg(arg, "-t", "--title", returnVals))
       {
          if (returnVals[0] == null)
          {
@@ -284,7 +284,7 @@ public class Jmakepdfx extends AbstractCLI
 
          pdfTitle = returnVals[0].toString();
       }
-      else if (isArg(arg, "--author", "-a", returnVals))
+      else if (isArg(arg, "-a", "--author", returnVals))
       {
          if (returnVals[0] == null)
          {
@@ -294,7 +294,7 @@ public class Jmakepdfx extends AbstractCLI
 
          pdfAuthor = returnVals[0].toString();
       }
-      else if (isArg(arg, "--icc-file", "-c", returnVals))
+      else if (isArg(arg, "-c", "--icc-file", returnVals))
       {
          if (returnVals[0] == null)
          {
@@ -316,7 +316,7 @@ public class Jmakepdfx extends AbstractCLI
       }
       else
       {
-         return false;
+         return super.parseCLIArg(arg, returnVals);
       }
 
       return true;
