@@ -55,6 +55,7 @@ lib/jmakepdfx-helpset.tjh	: doc/gpl-3.0-standalone.html \
 	$(tjhziphelpset) \
 	--license-file doc/gpl-3.0-standalone.html '' \
 	--locales 'en,en-GB' \
+	--file-for-locale en-sharedimages en \
 	lib \
 	--output lib/jmakepdfx-helpset.tjh
 
